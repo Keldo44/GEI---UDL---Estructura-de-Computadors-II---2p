@@ -1,0 +1,47 @@
+TECLAT EQU 0B000h
+PANTALLA EQU 0A000h
+ORIGEN 100h
+INICIO ini
+.DATOS
+fila1 VALOR 0,0,0
+fila2 VALOR 0,0,0
+fila3 VALOR 0,0,0
+
+;definir altres variables
+;......................
+Ini:
+    CALL Clean_teclat_pantalla 
+    CALL fi
+    
+
+    
+    Clean_teclat_pantalla:
+        ;guardem en un registre l'adreça base del dispositiu pantalla 
+        MOVH R0, BYTEALTO PANTALLA 
+        MOVL R0, BYTEBAJO PANTALLA
+        ;Netegem la pantalla
+        MOVL R1,120
+        MOVH R1,00H
+        ADD R1,R0,R1 ;R1 apunta al registre de control de la PANTALLA
+        MOVL R2,00000011B;
+        MOVH R2,00H
+        MOV [R1],R2; Fiquem un 1 al primer bit del registre de control per esborrar la pantalla en cada inici
+        
+        ;Netejem el Teclado
+        ;guardem en un registre l'adreça base del dispositiu pantalla 
+        MOVH R0, BYTEALTO TECLAT 
+        MOVL R0, BYTEBAJO TECLAT
+        ;Accedim al registre de control
+        INC R0
+        ;Apliquem el bit de esborrat
+        MOVH R3, 0
+        MOVL R3,00000100b
+        MOV [R0],R3
+    RET
+    fi:
+        JMP -1
+    FIN
+    
+
+
+
