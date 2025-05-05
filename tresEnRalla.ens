@@ -176,13 +176,9 @@ ini:
         MOVL R0, 0Fh
 
         XOR R1,R1,R1
-        MOVH R4, BYTEALTO DIRECCION wins
-        MOVL R4, BYTEBAJO DIRECCION wins
+        MOVH R4, BYTEALTO DIRECCION torn
+        MOVL R4, BYTEBAJO DIRECCION torn
 
-                             		
-                               		         
-        
-		
         print:
             MOV R2, [R4]   
             MOVH R2, 00000111b
@@ -193,8 +189,12 @@ ini:
             INC R4
             COMP R0,R1
         BRNZ print	
+
+        DEC R3
+        MOVH R2, 00000011b                     		
+        MOVL R2, 31h                          		         
+        MOV [R3], R2
     RET
-        
     wait_tecla:; Aquest bucle comprova si s'ha pitjat una tecla
 		MOVL R1, BYTEBAJO TECLAT        
 		MOVH R1, BYTEALTO TECLAT
