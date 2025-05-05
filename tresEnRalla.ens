@@ -6,7 +6,7 @@ INICIO ini
 fila1 VALOR 0,0,0
 fila2 VALOR 0,0,0
 fila3 VALOR 0,0,0
-adios VALOR 0761h, 0764h, 0769h, 076Fh, 0773h
+adios VALOR 0766h, 0772h, 0761h, 0773h, 0765h
 
 .CODIGO
 ini:
