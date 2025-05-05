@@ -1,240 +1,89 @@
-TECLAT EQU 0B000h
-PANTALLA EQU 0A000h
-ORIGEN 100h
-INICIO ini
-.PILA 10h
-.DATOS
-nom VALOR "NOM JUGADOR"
-torn VALOR " TORN JUGADOR "
-escriu VALOR "Escriu "
-campio VALOR "CAMPIO "
-tornarJugar VALOR "TORNAR A JUGAR?"
-fila4 VALOR 0,0,0
-fila5 VALOR 0,0,0
-fila6 VALOR 0,0,0
-fila7 VALOR 0,0,0
-adios VALOR "Adios:         "
-
-.CODIGO
-ini:
-	MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
-	MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
-    CALL R3
-	
-	MOVH R3, BYTEALTO DIRECCION Pintar_tauler
-	MOVL R3, BYTEBAJO DIRECCION Pintar_tauler
-    CALL R3
-	
-	MOVH R3, BYTEALTO DIRECCION torn_jug1
-	MOVL R3, BYTEBAJO DIRECCION torn_jug1
-    CALL R3
-	
-    MOVH R3, BYTEALTO DIRECCION fi
-	MOVL R3, BYTEBAJO DIRECCION fi
-    CALL R3
-    clean_teclat:
-		PUSH R0
-		PUSH R3
-		
-		MOVH R0, BYTEALTO TECLAT 
-        MOVL R0, BYTEBAJO TECLAT
-        ;Accedim al registre de control
-        INC R0
-        ;Apliquem el bit de esborrat
-        MOVH R3, 0
-        MOVL R3,00000100b
-        MOV [R0],R3
-		
-		POP R3
-		POP R0
-    RET
-    Clean_teclat_pantalla:
-        ;guardem en un registre l'adreça base del dispositiu pantalla 
-        MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
-        ;Netegem la pantalla
-        MOVL R1,120
-        MOVH R1,00H
-        ADD R1,R0,R1 ;R1 apunta al registre de control de la PANTALLA
-        MOVL R2,00000011B;
-        MOVH R2,00H
-        MOV [R1],R2; Fiquem un 1 al primer bit del registre de control per esborrar la pantalla en cada inici
-        
-        ;Netejem el Teclado
-        ;guardem en un registre l'adreça base del dispositiu pantalla 
-        MOVH R0, BYTEALTO TECLAT 
-        MOVL R0, BYTEBAJO TECLAT
-        ;Accedim al registre de control
-        INC R0
-        ;Apliquem el bit de esborrat
-        MOVH R3, 0
-        MOVL R3,00000100b
-        MOV [R0],R3
-    RET
-
-    Pintar_tauler:
-        MOVH R4, 00h                  		
-        MOVL R4, 10
-
-        MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
-        MOVH R3,  00h
-        MOVL R3,  47                            	                                                       
-        ADD R3, R0, R3        
-        MOVH R2, 00000111b                     		
-        MOVL R2, 43h                          		         
-        MOV [R3], R2
-
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 4Fh                          		         
-        MOV [R3], R2
-
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 4Ch                          		         
-        MOV [R3], R2
-
-        INC R3
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 31h                          		         
-        MOV [R3], R2
-
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 32h                          		         
-        MOV [R3], R2
-
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 33h                          		         
-        MOV [R3], R2
-
-        
-        ADD R3,R4,R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 46h                          		         
-        MOV [R3], R2
-
-        INC R3
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 31h                          		         
-        MOV [R3], R2
-
-        CALL tres_blancs
-       
-        ADD R3,R4,R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 49h                          		         
-        MOV [R3], R2
-
-        INC R3
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 32h                          		         
-        MOV [R3], R2
-
-        CALL tres_blancs
-
-        ADD R3, R4, R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 4Ch                          		         
-        MOV [R3], R2
-
-        INC R3
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 33h                          		         
-        MOV [R3], R2
-
-        CALL tres_blancs
-    RET
-
-    tres_blancs:
-        INC R3
-        MOVH R2, 00111111b                     		
-        MOVL R2, 00h                          		         
-        MOV [R3], R2
-
-        INC R3
-        MOVH R2, 00111111b                     		
-        MOVL R2, 00h                          		         
-        MOV [R3], R2
-
-        INC R3
-        MOVH R2, 00111111b                     		
-        MOVL R2, 00h                          		         
-        MOV [R3], R2
-    RET
-
-    torn_jug1:
-        MOV R3, R0
-        XOR R0,R0,R0
-        MOVL R0, 0Fh
-
-        XOR R1,R1,R1
-        MOVH R4, BYTEALTO DIRECCION adios
-        MOVL R4, BYTEBAJO DIRECCION adios
-
-                             		
-                               		         
-        
-		
-        print:
-            MOV R2, [R4]   
-            MOVH R2, 00000111b
-
-            MOV [R3], R2
-            INC R1
-            INC R3
-            INC R4
-            COMP R0,R1
-        BRNZ print	
-    RET
-        
-    wait_tecla:; Aquest bucle comprova si s'ha pitjat una tecla
-		MOVL R1, BYTEBAJO TECLAT        
-		MOVH R1, BYTEALTO TECLAT
-		INC R1
-		MOVH R2,00000001b 			
-		MOVL R2,00000000b
-		MOV R5,[R1]				
-		MOVL R5,00000000b
-		COMP R5,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
-	BRNZ wait_tecla
-
-    fi:
-        JMP -1
-    RET
-
-    dos_punts:
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 3Ah                          		         
-        MOV [R3], R2
-    RET
-    FIN
-    
-
-
-
 0100
-0127
-01C7
-0000
-0000
-0000
-0000
-0000
-0000
-0000
-0000
-0000
-0000
-0000
-0000
+016E
+020E
+01C0
+0038
+0007
+0111
+0054
+0049
+0092
+0124
+0020
+004E
+004F
+004D
+0020
+004A
+0055
+0047
+0041
+0044
+004F
+0052
+0020
+0020
+0020
+0020
+0054
+004F
+0052
+004E
+0020
+004A
+0055
+0047
+0041
+0044
+004F
+0052
+0020
+0020
+0045
+0073
+0063
+0072
+0069
+0075
+0020
+0020
+0020
+0020
+0020
+0020
+0020
+0020
+0020
+0043
+0041
+004D
+0050
+0049
+004F
+0020
+0020
+0020
+0020
+0020
+0020
+0020
+0020
+0020
+0054
+004F
+0052
+004E
+0041
+0052
+0020
+0041
+0020
+004A
+0055
+0047
+0041
+0052
+003F
 0000
 0000
 0000
@@ -260,19 +109,19 @@ ini:
 0020
 0020
 0020
-0038
-0038
+0020
+0020
 2B01
-233E
+2385
 DB00
 2B01
-234D
+2394
 DB00
 2B01
-2398
+23DF
 DB00
 2B01
-23B0
+23F7
 DB00
 3000
 3300
@@ -380,7 +229,7 @@ E000
 200F
 6124
 2C01
-2418
+2400
 1280
 2A07
 1B40
