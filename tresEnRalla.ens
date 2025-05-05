@@ -4,6 +4,7 @@ ORIGEN 100h
 INICIO ini
 .PILA 10h
 .DATOS
+wins VALOR 111000000b,000111000b,000000111b,100010001b,001010100b,001001001b,010010010b,100100100b
 fila0 VALOR 0,0,0
 fila1 VALOR 0,0,0
 fila2 VALOR 0,0,0
@@ -174,8 +175,8 @@ ini:
         MOVL R0, 0Fh
 
         XOR R1,R1,R1
-        MOVH R4, BYTEALTO DIRECCION adios
-        MOVL R4, BYTEBAJO DIRECCION adios
+        MOVH R4, BYTEALTO DIRECCION wins
+        MOVL R4, BYTEBAJO DIRECCION wins
 
                              		
                                		         
