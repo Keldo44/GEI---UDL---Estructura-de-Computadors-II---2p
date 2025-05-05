@@ -12,7 +12,7 @@ fila4 VALOR 0,0,0
 fila5 VALOR 0,0,0
 fila6 VALOR 0,0,0
 fila7 VALOR 0,0,0
-adios VALOR 0766h, 0772h, 0761h, 0773h, 0765h
+adios VALOR "Adios:         "
 
 .CODIGO
 ini:
@@ -169,63 +169,28 @@ ini:
     RET
 
     torn_jug1:
-		MOV R3, R0
-        MOVH R2, 00000111b  
-		
-		
-        CALL dos_punts
+        MOV R3, R0
+        XOR R0,R0,R0
+        MOVL R0, 0Fh
 
-		MOVH R3, BYTEALTO DIRECCION wait_tecla
-		MOVL R3, BYTEBAJO DIRECCION wait_tecla
-		CALL R3
+        XOR R1,R1,R1
+        MOVH R4, BYTEALTO DIRECCION adios
+        MOVL R4, BYTEBAJO DIRECCION adios
+
+                             		
+                               		         
+        
 		
-		col:
-			DEC R1
-			MOV R5,[R1]		;llegim el buffer del teclat		                                         
-			MOVH R6,00H
-			MOVH R5,00H
-			MOVL R6,49      ; codi ascii de la tecla "1"
-			
-			MOVH R3, BYTEALTO DIRECCION clean_teclat
-			MOVL R3, BYTEBAJO DIRECCION clean_teclat
-			CALL R3
-			
-			COMP R6,R5          			
-			BRZ row
-			XOR R5,R5,R5
-			BRZ col
-		
-		row:
-			MOVH R3, BYTEALTO DIRECCION wait_tecla
-			MOVL R3, BYTEBAJO DIRECCION wait_tecla
-			CALL R3
-			
-			DEC R1
-			MOV R5,[R1]		;llegim el buffer del teclat		                                         
-			MOVH R6,00H
-			MOVH R5,00H
-			MOVL R6,49      ; codi ascii de la tecla "1"
-			
-			MOVH R3, BYTEALTO DIRECCION clean_teclat
-			MOVL R3, BYTEBAJO DIRECCION clean_teclat
-			CALL R3
-			
-			COMP R6,R5          			
-			BRNZ row
-		
-		;guardem en un registre l'adreça base del dispositiu pantalla 
-        MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
-		
-		MOVH R3,  00h
-        MOVL R3,  82                            	                                                       
-        ADD R3, R0, R3
-		
-		MOVH R2, 00000111b;		T
-		MOVL R2, 84
-		MOV [R3], R2
-		
-		
+        print:
+            MOV R2, [R4]   
+            MOVH R2, 00000111b
+
+            MOV [R3], R2
+            INC R1
+            INC R3
+            INC R4
+            COMP R0,R1
+        BRNZ print	
     RET
         
     wait_tecla:; Aquest bucle comprova si s'ha pitjat una tecla
