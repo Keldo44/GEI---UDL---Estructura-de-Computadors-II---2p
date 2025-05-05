@@ -4,9 +4,14 @@ ORIGEN 100h
 INICIO ini
 .PILA 10h
 .DATOS
+fila0 VALOR 0,0,0
 fila1 VALOR 0,0,0
 fila2 VALOR 0,0,0
 fila3 VALOR 0,0,0
+fila4 VALOR 0,0,0
+fila5 VALOR 0,0,0
+fila6 VALOR 0,0,0
+fila7 VALOR 0,0,0
 adios VALOR 0766h, 0772h, 0761h, 0773h, 0765h
 
 .CODIGO
