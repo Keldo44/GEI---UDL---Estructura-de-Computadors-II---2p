@@ -1,31 +1,30 @@
-def main():
-    ascii = [
-    (49, '1'), (50, '2'), (51, '3'), (52, '4'), (53, '5'),
-    (54, '6'), (55, '7'), (56, '8'), (57, '9'),
-    (65, 'A'), (66, 'B'), (67, 'C'), (68, 'D'), (69, 'E'),
-    (70, 'F'), (71, 'G'), (72, 'H'), (73, 'I'), (74, 'J'),
-    (75, 'K'), (76, 'L'), (77, 'M'), (78, 'N'), (79, 'O'),
-    (80, 'P'), (81, 'Q'), (82, 'R'), (83, 'S'), (84, 'T'),
-    (85, 'U'), (86, 'V'), (87, 'W'), (88, 'X'), (89, 'Y'),
-    (90, 'Z'),
-    (97, 'a'), (98, 'b'), (99, 'c'), (100, 'd'), (101, 'e'),
-    (102, 'f'), (103, 'g'), (104, 'h'), (105, 'i'), (106, 'j'),
-    (107, 'k'), (108, 'l'), (109, 'm'), (110, 'n'), (111, 'o'),
-    (112, 'p'), (113, 'q'), (114, 'r'), (115, 's'), (116, 't'),
-    (117, 'u'), (118, 'v'), (119, 'w'), (120, 'x'), (121, 'y'),
-    (122, 'z')
-    ]
+def convertir_letra(letra):
+    if len(letra) != 1:
+        raise ValueError("Debes ingresar solo una letra.")
 
-    for char in ascii:
-        print(
-            str(char[1])+":\n"
-            "\tINC R3\n"+
-            "\tMOVH R2, 00000111b\n"+                   		
-            "\tMOVL R2, "+str(char[0])+"\n"+                          		         
-            "\tMOV [R3], R2\n"+
-            "RET\n"
-        )
+    ascii_val = ord(letra)  # Valor ASCII (8 bits)
+    binario_bajo = format(ascii_val, '08b')  # A binario con 8 bits
+    binario_completo = '00000111' + binario_bajo  # Añadir byte alto
+    valor_final = int(binario_completo, 2)  # A entero
+    hex_final = format(valor_final, '04X')  # A hex de 4 cifras, mayúsculas
+
+    return f"{hex_final}h"
+
+# Ejemplo de uso
+
+frase = input("Introduce una frase: ")
+
+resultado = frase+" VALOR " 
+for letra in frase:
+    try:
+        resultado += convertir_letra(letra)+", "
+    except ValueError as e:
+        resultado = "Tenias que hacer algo mal, un trabajo tenias...  "
+# remove two last chars
+resultado = resultado[:-2]
+print(resultado)
 
 
-if __name__ == "__main__":
-    main()
+
+
+

@@ -6,7 +6,7 @@ INICIO ini
 fila1 VALOR 0,0,0
 fila2 VALOR 0,0,0
 fila3 VALOR 0,0,0
-hola VALOR 0748h, 074Fh, 074Ch, 0741h 
+adios VALOR 0761h, 0764h, 0769h, 076Fh, 0773h
 
 .CODIGO
 ini:
@@ -23,7 +23,7 @@ ini:
         MOVL R1,120
         MOVH R1,00H
         ADD R1,R0,R1 ;R1 apunta al registre de control de la PANTALLA
-        MOVL R2,00000011B;
+        MOVL R2,00000011B
         MOVH R2,00H
         MOV [R1],R2; Fiquem un 1 al primer bit del registre de control per esborrar la pantalla en cada inici
         
@@ -35,7 +35,7 @@ ini:
         INC R0
         ;Apliquem el bit de esborrat
         MOVH R3, 0
-        MOVL R3,00000100b
+        MOVL R3, 0000100b
         MOV [R0],R3
     RET
 
@@ -137,8 +137,8 @@ ini:
     RET
 
     torn_jug1:
-        MOVL R4, BYTEBAJO DIRECCION hola ; vector (sol baixos)
-        MOVH R4, BYTEALTO DIRECCION hola ; vector (sol baixos)
+        MOVL R4, BYTEBAJO DIRECCION adios ; vector (sol baixos)
+        MOVH R4, BYTEALTO DIRECCION adios ; vector (sol baixos)
         
         
         MOV R3, R0              ; pantalla
@@ -154,6 +154,11 @@ ini:
 
         INC R3                  
         MOV R2,[R4]                          		         
+        MOV [R3], R2
+        INC R4
+
+        INC R3                  
+        MOV R2,[R4]                           		         
         MOV [R3], R2
         INC R4
 
