@@ -29,7 +29,7 @@ ini:
 	MOVH R3, BYTEALTO DIRECCION torn_jug1
 	MOVL R3, BYTEBAJO DIRECCION torn_jug1
     CALL R3
-	
+
     MOVH R3, BYTEALTO DIRECCION fi
 	MOVL R3, BYTEBAJO DIRECCION fi
     CALL R3
@@ -172,13 +172,105 @@ ini:
 
     torn_jug1:
         MOV R3, R0
-        XOR R0,R0,R0
-        MOVL R0, 0Fh
-
-        XOR R1,R1,R1
         MOVH R4, BYTEALTO DIRECCION torn
         MOVL R4, BYTEBAJO DIRECCION torn
 
+        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVL R2, BYTEBAJO DIRECCION print_line
+        CALL R2
+
+        DEC R3
+        MOVH R2, 00000011b                     		
+        MOVL R2, 31h                          		         
+        MOV [R3], R2
+
+        INC R3
+        MOVH R4, BYTEALTO DIRECCION escriu
+        MOVL R4, BYTEBAJO DIRECCION escriu
+
+        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVL R2, BYTEBAJO DIRECCION print_line
+        CALL R2
+        
+        XOR R2, R2, R2
+        MOVL R2, 08h
+        SUB R3, R3, R2
+
+        MOVH R2, BYTEALTO DIRECCION print_FIL
+        MOVL R2, BYTEBAJO DIRECCION print_FIL
+        CALL R2
+
+        
+
+        MOVH R3, BYTEALTO DIRECCION wait_FIL
+        MOVL R3, BYTEBAJO DIRECCION wait_FIL
+        CALL R3
+
+        MOVH R3, BYTEALTO DIRECCION print_COL
+        MOVL R3, BYTEBAJO DIRECCION print_COL
+        CALL R3
+
+        MOVH R3, BYTEALTO DIRECCION wait_COL
+        MOVL R3, BYTEBAJO DIRECCION wait_COL
+        CALL R3
+        
+    RET
+
+    print_FIL:
+        MOVH R2, 00000011b                     		
+        MOVL R2, 46h                          		         
+        MOV [R3], R2
+        INC R3
+
+        MOVL R2, 49h                          		         
+        MOV [R3], R2
+        INC R3
+
+        MOVL R2, 4Ch                          		         
+        MOV [R3], R2
+        INC R3
+
+        MOVL R2, 3Ah                          		         
+        MOV [R3], R2
+        INC R3
+
+    RET
+
+    print_COL:
+        PUSH R0
+        PUSH R2
+        MOVH R0, BYTEALTO PANTALLA 
+        MOVL R0, BYTEBAJO PANTALLA
+
+        XOR R3,R3,R3
+        MOVL R3, 16h
+        ADD R3,R0,R3
+
+        MOVH R2, 00000011b                     		
+        MOVL R2, 43h                          		         
+        MOV [R3], R2
+        INC R3
+
+        MOVL R2, 4Fh                          		         
+        MOV [R3], R2
+        INC R3
+
+        MOVL R2, 4Ch                          		         
+        MOV [R3], R2
+        INC R3
+        POP R2
+        POP R0
+    RET
+    
+    print_line:
+        PUSH R0
+        PUSH R1
+        PUSH R2
+        PUSH R4
+        
+        XOR R0,R0,R0
+        MOVL R0, 0Fh
+        XOR R1,R1,R1
         print:
             MOV R2, [R4]   
             MOVH R2, 00000111b
@@ -188,34 +280,137 @@ ini:
             INC R3
             INC R4
             COMP R0,R1
-        BRNZ print	
+        BRNZ print
 
-        DEC R3
-        MOVH R2, 00000011b                     		
-        MOVL R2, 31h                          		         
-        MOV [R3], R2
+        POP R4
+        POP R2
+        POP R1
+        POP R0
     RET
-    wait_tecla:; Aquest bucle comprova si s'ha pitjat una tecla
-		MOVL R1, BYTEBAJO TECLAT        
-		MOVH R1, BYTEALTO TECLAT
-		INC R1
-		MOVH R2,00000001b 			
-		MOVL R2,00000000b
-		MOV R5,[R1]				
-		MOVL R5,00000000b
-		COMP R5,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
-	BRNZ wait_tecla
 
     fi:
         JMP -1
     RET
+    
+    wait_FIL:
+        wait_tecla:; Aquest bucle comprova si s'ha pitjat una tecla
+            MOVH R3, BYTEALTO DIRECCION clean_teclat
+            MOVL R3, BYTEBAJO DIRECCION clean_teclat
+            CALL R3
+            
+            MOVL R1, BYTEBAJO TECLAT        
+            MOVH R1, BYTEALTO TECLAT
+            INC R1
+            
+            MOVH R2,00000001b 			
+            MOVL R2,00000000b
 
-    dos_punts:
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 3Ah                          		         
-        MOV [R3], R2
+            no_tecla:
+                MOV R4, [R1]
+                MOVL R4, 00h
+                COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
+            BRNZ no_tecla
+
+            DEC R1
+            MOV R5,[R1]				
+            
+            MOVH R6, 00h
+            MOVH R5, 00h
+            MOVL R6, 31h
+
+            COMP R5,R6; 
+            BRNZ fil_is_one
+            
+            MOVL R6, 32h
+            COMP R5,R6; 
+            BRNZ fil_is_two
+
+            MOVL R6, 33h
+            COMP R5,R6; 
+            BRNZ fil_is_three
+
+            COMP R5,R6; 
+            BRNZ wait_tecla
+            
+        
+            fil_is_one:
+                XOR R2,R2,R2
+                MOVL R2, 01h
+                RET
+                
+            
+            fil_is_two:
+                XOR R2,R2,R2
+                MOVL R2, 02h
+                RET
+                
+            
+            fil_is_three:
+                XOR R2,R2,R2
+                MOVL R2, 03h
+                RET
     RET
+
+    wait_COL:
+        PUSH R2
+
+        MOVH R3, BYTEALTO DIRECCION clean_teclat
+        MOVL R3, BYTEBAJO DIRECCION clean_teclat
+        CALL R3
+        INC R1
+            
+        MOVH R2,00000001b 			
+        MOVL R2,00000000b
+
+        no_tecla2:
+            MOV R4, [R1]
+            MOVL R4, 00h
+            COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
+        BRNZ no_tecla2
+
+        DEC R1
+        MOV R5,[R1]				
+        
+        MOVH R6, 00h
+        MOVH R5, 00h
+        MOVL R6, 31h
+
+        COMP R5,R6; 
+        BRNZ col_is_one
+        
+        MOVL R6, 32h
+        COMP R5,R6; 
+        BRNZ col_is_two
+
+        MOVL R6, 33h
+        COMP R5,R6; 
+        BRNZ col_is_three
+
+        COMP R5,R6; 
+        BRNZ wait_COL
+
+        POP R2
+
+        col_is_one:
+            XOR R4,R4,R4
+            MOVL R4, 01h
+            RET
+            
+        
+        col_is_two:
+            XOR R4,R4,R4
+            MOVL R4, 02h
+            RET
+            
+        
+        col_is_three:
+            XOR R4,R4,R4
+            MOVL R4, 03h
+
+            RET
+    RET
+
+
     FIN
     
 
