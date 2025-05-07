@@ -213,7 +213,15 @@ ini:
         MOVH R3, BYTEALTO DIRECCION wait_COL
         MOVL R3, BYTEBAJO DIRECCION wait_COL
         CALL R3
-        
+
+        MOVH R3, BYTEALTO DIRECCION check_pos
+        MOVL R3, BYTEBAJO DIRECCION check_pos
+        CALL R3
+
+        MOVH R3, BYTEALTO DIRECCION tres_ratlla
+        MOVL R3, BYTEBAJO DIRECCION tres_ratlla
+        CALL R3
+
     RET
 
     print_FIL:
@@ -258,6 +266,7 @@ ini:
         MOVL R2, 4Ch                          		         
         MOV [R3], R2
         INC R3
+
         POP R2
         POP R0
     RET
@@ -319,15 +328,15 @@ ini:
             MOVL R6, 31h
 
             COMP R5,R6; 
-            BRNZ fil_is_one
+            BRZ fil_is_one
             
             MOVL R6, 32h
             COMP R5,R6; 
-            BRNZ fil_is_two
+            BRZ fil_is_two
 
             MOVL R6, 33h
             COMP R5,R6; 
-            BRNZ fil_is_three
+            BRZ fil_is_three
 
             COMP R5,R6; 
             BRNZ wait_tecla
@@ -349,69 +358,170 @@ ini:
                 XOR R2,R2,R2
                 MOVL R2, 03h
                 RET
-    RET
+   
 
     wait_COL:
+        wait_tecla2:
+            PUSH R2
+
+            MOVH R3, BYTEALTO DIRECCION clean_teclat
+            MOVL R3, BYTEBAJO DIRECCION clean_teclat
+            CALL R3
+            INC R1
+                
+            MOVH R2,00000001b 			
+            MOVL R2,00000000b
+
+            no_tecla2:
+                MOV R4, [R1]
+                MOVL R4, 00h
+                COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
+            BRNZ no_tecla2
+
+            DEC R1
+            MOV R5,[R1]				
+            
+            MOVH R6, 00h
+            MOVH R5, 00h
+            MOVL R6, 31h
+
+            POP R2
+            COMP R5,R6; 
+            BRZ col_is_one
+            
+            MOVL R6, 32h
+            COMP R5,R6; 
+            BRZ col_is_two
+
+            MOVL R6, 33h
+            COMP R5,R6; 
+            BRZ col_is_three
+
+            COMP R5,R6; 
+            BRNZ wait_tecla2
+
+           
+
+            col_is_one:
+                XOR R4,R4,R4
+                MOVL R4, 01h
+                RET
+                
+            
+            col_is_two:
+                XOR R4,R4,R4
+                MOVL R4, 02h
+                RET
+                
+            
+            col_is_three:
+                XOR R4,R4,R4
+                MOVL R4, 03h
+                RET
+    
+    check_pos:
         PUSH R2
+        PUSH R4
+        PUSH R0
+        PUSH R1
+        
 
-        MOVH R3, BYTEALTO DIRECCION clean_teclat
-        MOVL R3, BYTEBAJO DIRECCION clean_teclat
+        DEC R2
+        XOR R1,R1,R1
+        MOVL R1, 03h
+        XOR R0,R0,R0
+        MUL:
+            ADD R0, R2, R0
+            DEC R1
+        BRNZ MUL
+
+        ADD R0, R0, R4
+       
+        MOVL R1, 02h
+        MOV R4,R0
+        DEC R0
+        POW:
+            ADD R1, R1, R1
+            DEC R0
+        BRNZ POW
+        
+        OR R0,R5,R6
+        AND R0,R0,R1
+        BRNZ wait_FIL
+
+        OR R5,R5,R1
+
+        POP R1
+        POP R0
+        
+        
+
+        print_x:
+            MOVH R0, BYTEALTO PANTALLA 
+            MOVL R0, BYTEBAJO PANTALLA
+
+            POP R4
+            POP R2
+
+            XOR R1,R1,R1
+            XOR R3,R3,R3
+            DEC R2
+            DEC R4
+            
+            MOVL R3, 15
+            MUL2:
+                ADD R1,R1,R2
+                DEC R3
+            BRNZ MUL2
+
+            ADD R1, R4, R1
+            MOVL R4, 66
+            ADD R1, R1, R4
+
+            ADD R1, R1, R0
+            MOVH R3, 00111100b
+            MOVL R3, 58h
+
+            MOV [R1], R3
+        RET
+    
+
+    
+    tres_ratlla:
+        MOVL R1, 08h
+        MOVH R0, BYTEALTO DIRECCION wins
+        MOVL R0, BYTEBAJO DIRECCION wins
+
+        ADD R0, R1,R0
+        
+        check_win:
+            AND R2, R5, [R0]
+            BRZ win
+            DEC R0    
+            DEC R1
+        BRNS check_win
+
+        OR R2, R5, R6
+        MOVH R3, 01h
+        MOVL R3, FFh
+        COMP  R2, R3
+        BRZ draw
+        
+        MOVH R3, BYTEALTO DIRECCION fi
+        MOVL R3, BYTEBAJO DIRECCION fi
         CALL R3
-        INC R1
-            
-        MOVH R2,00000001b 			
-        MOVL R2,00000000b
 
-        no_tecla2:
-            MOV R4, [R1]
-            MOVL R4, 00h
-            COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
-        BRNZ no_tecla2
+        draw:
+            MOVH R3, BYTEALTO DIRECCION fi
+            MOVL R3, BYTEBAJO DIRECCION fi
+            CALL R3
 
-        DEC R1
-        MOV R5,[R1]				
-        
-        MOVH R6, 00h
-        MOVH R5, 00h
-        MOVL R6, 31h
-
-        COMP R5,R6; 
-        BRNZ col_is_one
-        
-        MOVL R6, 32h
-        COMP R5,R6; 
-        BRNZ col_is_two
-
-        MOVL R6, 33h
-        COMP R5,R6; 
-        BRNZ col_is_three
-
-        COMP R5,R6; 
-        BRNZ wait_COL
-
-        POP R2
-
-        col_is_one:
-            XOR R4,R4,R4
-            MOVL R4, 01h
-            RET
-            
-        
-        col_is_two:
-            XOR R4,R4,R4
-            MOVL R4, 02h
-            RET
-            
-        
-        col_is_three:
-            XOR R4,R4,R4
-            MOVL R4, 03h
-
-            RET
+        win:
+            MOVH R3, BYTEALTO DIRECCION fi
+            MOVL R3, BYTEBAJO DIRECCION fi
+            CALL R3
     RET
-
-
-    FIN
+FIN
     
 
 
