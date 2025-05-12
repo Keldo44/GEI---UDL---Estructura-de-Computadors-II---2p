@@ -557,9 +557,31 @@ ini:
             AND R0,R0,R1
             BRNZ wait_FIL
 
-            OR R5,R5,R1
+            
             
             POP R0
+            POP R4
+            POP R2
+
+            MOV R3,R1
+            POP R1
+            PUSH R1
+            PUSH R2
+            PUSH R4
+
+            XOR R4,R4,R4
+            MOVL R4, 01h
+            COMP R4,R1
+            BRZ JUG_1
+            OR R6,R6,R2
+            BRS refresh_pile
+            JUG_1:
+                OR R5,R5,R2
+
+            refresh_pile:
+                POP R4
+                POP R2
+                POP R1
 
         print:
             MOVH R0, BYTEALTO PANTALLA 
@@ -610,7 +632,7 @@ ini:
 
         ADD R0, R3, R0
         
-        MOVL R2, 0Fh
+        MOVL R2, 01h
         inf:
             DEC R2
         BRNZ inf
@@ -621,7 +643,7 @@ ini:
             AND R1, R5, R2
 
             COMP R1,R2
-            BRNZ win
+            BRZ win
             
             POP R1
             DEC R0    
@@ -630,6 +652,7 @@ ini:
 
         MOVH R3, 00h
         MOVL R3, 07h
+        INC R0
         ADD R0, R0, R3
 
         check_win2:
@@ -637,7 +660,7 @@ ini:
             PUSH R1
             AND R1, R6, R2
             COMP R1,R2
-            BRNZ win
+            BRZ win
             POP R1
             DEC R0    
             DEC R3
