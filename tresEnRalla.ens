@@ -15,7 +15,7 @@ fila4 VALOR 0,0,0
 fila5 VALOR 0,0,0
 fila6 VALOR 0,0,0
 fila7 VALOR 0,0,0
-adios VALOR "Adios:         "
+adios VALOR         "Adios:         "
 
 .CODIGO
 ini:
@@ -400,6 +400,7 @@ ini:
     RET
     
     wait_FIL:
+        
         wait_tecla:; Aquest bucle comprova si s'ha pitjat una tecla
             MOVH R3, BYTEALTO DIRECCION clean_teclat
             MOVL R3, BYTEBAJO DIRECCION clean_teclat
@@ -419,24 +420,24 @@ ini:
             BRNZ no_tecla
 
             DEC R0
-            MOV R5,[R0]				
+            MOV R3,[R0]				
             
-            MOVH R6, 00h
-            MOVH R5, 00h
-            MOVL R6, 31h
+            MOVH R2, 00h
+            MOVH R3, 00h
+            MOVL R2, 31h
 
-            COMP R5,R6; 
+            COMP R3,R2; 
             BRZ fil_is_one
             
-            MOVL R6, 32h
-            COMP R5,R6; 
+            MOVL R2, 32h
+            COMP R3,R2; 
             BRZ fil_is_two
 
-            MOVL R6, 33h
-            COMP R5,R6; 
+            MOVL R2, 33h
+            COMP R3,R2; 
             BRZ fil_is_three
 
-            COMP R5,R6; 
+            COMP R3,R2; 
             BRNZ wait_tecla
             
         
@@ -477,25 +478,25 @@ ini:
             BRNZ no_tecla2
 
             DEC R0
-            MOV R5,[R0]				
+            MOV R3,[R0]				
             
-            MOVH R6, 00h
-            MOVH R5, 00h
-            MOVL R6, 31h
+            MOVH R4, 00h
+            MOVH R3, 00h
+            MOVL R4, 31h
 
             POP R2
-            COMP R5,R6; 
+            COMP R3,R4; 
             BRZ col_is_one
             
-            MOVL R6, 32h
-            COMP R5,R6; 
+            MOVL R4, 32h
+            COMP R3,R4; 
             BRZ col_is_two
 
-            MOVL R6, 33h
-            COMP R5,R6; 
+            MOVL R4, 33h
+            COMP R3,R4; 
             BRZ col_is_three
 
-            COMP R5,R6; 
+            COMP R3,R4; 
             BRNZ wait_tecla2
 
            
@@ -535,24 +536,30 @@ ini:
 
         ADD R0, R0, R4
        
-        MOVL R1, 02h
-
         DEC R0
+        COMP R0, R1
+        BRZ zero_pow
+        MOVL R1, 01h
+
         POW:
             ADD R1, R1, R1
             DEC R0
         BRNZ POW
         
-        OR R0,R5,R6
-        AND R0,R0,R1
-        BRNZ wait_FIL
+        XOR R0,R0,R0
+        BRZ check
+        zero_pow:
+            INC R1
+            BRNZ check
 
-        OR R5,R5,R1
+        check:
+            OR R0,R5,R6
+            AND R0,R0,R1
+            BRNZ wait_FIL
 
-        
-        POP R0
-        
-        
+            OR R5,R5,R1
+            
+            POP R0
 
         print:
             MOVH R0, BYTEALTO PANTALLA 
@@ -603,13 +610,20 @@ ini:
 
         ADD R0, R3, R0
         
+        MOVL R2, 0Fh
+        inf:
+            DEC R2
+        BRNZ inf
+
         check_win:
             MOV R2, [R0]
             PUSH R1
             AND R1, R5, R2
+
             COMP R1,R2
+            BRNZ win
+            
             POP R1
-            BRZ win
             DEC R0    
             DEC R3
         BRNS check_win
@@ -623,8 +637,8 @@ ini:
             PUSH R1
             AND R1, R6, R2
             COMP R1,R2
+            BRNZ win
             POP R1
-            BRZ win
             DEC R0    
             DEC R3
         BRNS check_win2
@@ -655,6 +669,8 @@ ini:
             CALL R3
 
         win:
+            POP R1
+
             MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
             MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
             CALL R3
