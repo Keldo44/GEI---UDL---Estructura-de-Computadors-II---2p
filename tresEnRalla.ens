@@ -554,34 +554,67 @@ ini:
 
         check:
             OR R0,R5,R6
-            AND R0,R0,R1
-            BRNZ wait_FIL
-
-            
-            
+            AND R3,R0,R1
             POP R0
             POP R4
             POP R2
+            AND R3,R3,R3
+            BRZ skip
+            
+            PUSH R2
+            XOR R2,R2,R2
+            MOVL R2, 0FFh
+            inf:
+                DEC R2
+            BRNZ inf
+            POP R2
 
-            MOV R3,R1
+            MOVH R2, BYTEALTO DIRECCION print_FIL
+            MOVL R2, BYTEBAJO DIRECCION print_FIL
+            CALL R2
+
+            MOVH R3, BYTEALTO DIRECCION wait_FIL
+            MOVL R3, BYTEBAJO DIRECCION wait_FIL
+            CALL R3
+
+            MOVH R3, BYTEALTO DIRECCION print_COL
+            MOVL R3, BYTEBAJO DIRECCION print_COL
+            CALL R3
+
+            MOVH R3, BYTEALTO DIRECCION wait_COL
+            MOVL R3, BYTEBAJO DIRECCION wait_COL
+            CALL R3
+            
+            
+            
+            XOR R4, R4, R4
+            XOR R2, R2, R2
+            XOR R0, R0, R0
+
+            COMP R0,R0
+            BRZ check_pos
+                
+
+            skip:
+                MOV R3,R1
+                
+
             POP R1
             PUSH R1
             PUSH R2
             PUSH R4
-
+            
             XOR R4,R4,R4
             MOVL R4, 01h
             COMP R4,R1
             BRZ JUG_1
-            OR R6,R6,R2
+            OR R6,R6,R3
             BRS refresh_pile
             JUG_1:
-                OR R5,R5,R2
+                OR R5,R5,R3
 
             refresh_pile:
-                POP R4
-                POP R2
-                POP R1
+                XOR R3,R3,R3
 
         print:
             MOVH R0, BYTEALTO PANTALLA 
@@ -632,10 +665,7 @@ ini:
 
         ADD R0, R3, R0
         
-        MOVL R2, 01h
-        inf:
-            DEC R2
-        BRNZ inf
+        
 
         check_win:
             MOV R2, [R0]
