@@ -563,15 +563,16 @@ ini:
             
             PUSH R2
             XOR R2,R2,R2
-            MOVL R2, 0FFh
+            MOVL R2, 0Fh
             inf:
                 DEC R2
             BRNZ inf
             POP R2
-
-            MOVH R2, BYTEALTO DIRECCION print_FIL
-            MOVL R2, BYTEBAJO DIRECCION print_FIL
-            CALL R2
+            POP R1
+            PUSH R1
+            MOVH R3, BYTEALTO DIRECCION print_FIL
+            MOVL R3, BYTEBAJO DIRECCION print_FIL
+            CALL R3
 
             MOVH R3, BYTEALTO DIRECCION wait_FIL
             MOVL R3, BYTEBAJO DIRECCION wait_FIL
@@ -586,11 +587,8 @@ ini:
             CALL R3
             
             
-            
-            XOR R4, R4, R4
-            XOR R2, R2, R2
             XOR R0, R0, R0
-
+            POP R1
             COMP R0,R0
             BRZ check_pos
                 
@@ -609,7 +607,8 @@ ini:
             COMP R4,R1
             BRZ JUG_1
             OR R6,R6,R3
-            BRS refresh_pile
+            COMP R6, R6
+            BRZ refresh_pile
             JUG_1:
                 OR R5,R5,R3
 
