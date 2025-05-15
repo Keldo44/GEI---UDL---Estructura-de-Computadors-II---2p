@@ -6,13 +6,16 @@ INICIO ini
 .DATOS
 wins VALOR 111000000b,000111000b,000000111b,100010001b,001010100b,001001001b,010010010b,100100100b
 nom VALOR           " NOM JUGADOR  ?"
-name1 VALOR         "               "
+name1 VALOR         "111111111111111"
 name2 VALOR         "               "
 torn VALOR          " TORN JUGADOR  "
 escriu VALOR        "Escriu         "
 campio VALOR        "CAMPIO         "
 tornarJugar VALOR   "TORNAR A JUGAR?"
 win_txt VALOR       "CAMPIO JUGADOR "
+rply_txt VALOR      "TORNAR A JUGAR?"
+s_o_n VALOR         "      s/n      "
+merci VALOR         "MERCI PER JUGAR"
 fila4 VALOR 0,0,0
 fila5 VALOR 0,0,0
 fila6 VALOR 0,0,0
@@ -25,12 +28,8 @@ ini:
 	MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
     CALL R3
 	
-    MOVH R3, BYTEALTO DIRECCION NOM_1
-	MOVL R3, BYTEBAJO DIRECCION NOM_1
-    CALL R3
-
-    MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
-	MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+    MOVH R3, BYTEALTO DIRECCION replay
+	MOVL R3, BYTEBAJO DIRECCION replay
     CALL R3
 
 	MOVH R3, BYTEALTO DIRECCION Pintar_tauler
@@ -96,6 +95,9 @@ ini:
     RET
 
     NOM_1:
+        POP R6
+        POP R6
+        POP R6
         MOVH R0, BYTEALTO PANTALLA 
         MOVL R0, BYTEBAJO PANTALLA
         MOV R3, R0
@@ -107,10 +109,14 @@ ini:
         MOVL R4, 39h
         MOV [R3], R4
         MOV R3, R0
-
+        XOR R4, R4, R4
 
         MOVH R4, BYTEALTO DIRECCION nom
         MOVL R4, BYTEBAJO DIRECCION nom
+
+        POP R6
+        POP R6
+        POP R6
 
         MOVH R2, BYTEALTO DIRECCION print_line
         MOVL R2, BYTEBAJO DIRECCION print_line
@@ -168,21 +174,20 @@ ini:
                 DEC R2
                 BRZ acabado
 
+
                 MOV R4, [R1]
                 MOVL R4, 00h
                 SUB R6,R4,R3
                 POP R3
                 POP R4
+                DEC R1
                 AND R6,R6,R6
             BRNZ wait_char
-            DEC R1
-            MOV R6, [R0]
+            MOV R6, [R1]
             MOV [R3], R6
             INC R3
-            inf2:
-                AND R3,R3,R3
-            BRNZ inf2
-            MOVH R6, 000000011b 			
+            
+            MOVH R6, 11b 			
             PUSH R2
             PUSH R4
             XOR R2, R2, R2
@@ -193,7 +198,10 @@ ini:
 
             SUB R4, R3, R4
             ADD R2, R2, R4
-            
+
+            MOVH R0, BYTEALTO PANTALLA 
+            MOVL R0, BYTEBAJO PANTALLA
+
             ADD R0, R2, R0
             
             MOV [R0], R6
@@ -202,11 +210,8 @@ ini:
             POP R4
             POP R2			
 
-            PUSH R3
-            MOVH R3, BYTEALTO DIRECCION clean_teclat
-            MOVL R3, BYTEBAJO DIRECCION clean_teclat
-            CALL R3
-            POP R3
+            ;CLEAN TECLAT 
+            
             DEC R4
             BRZ acabado
             DEC R2
@@ -216,6 +221,8 @@ ini:
             AND R0, R0, R0
         
     RET
+        
+    
     
     Pintar_tauler:
         PUSH R0
@@ -878,6 +885,112 @@ ini:
             MOVH R2, 00000011b
 
             MOV [R3], R2
+    RET
+
+    replay:
+        MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+        MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+        CALL R3
+
+        MOVH R0, BYTEALTO PANTALLA 
+        MOVL R0, BYTEBAJO PANTALLA
+
+        MOVH R2, 00h
+        MOVL R2, 1Eh
+
+        XOR R3, R3, R3
+        ADD R3, R0, R2
+
+        MOVH R4, BYTEALTO DIRECCION rply_txt
+        MOVL R4, BYTEBAJO DIRECCION rply_txt
+
+        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVL R2, BYTEBAJO DIRECCION print_line
+        CALL R2
+
+        MOVH R2, 00h
+        MOVL R2, 2Dh
+
+        ADD R3, R0, R2
+        
+        MOVH R4, BYTEALTO DIRECCION s_o_n
+        MOVL R4, BYTEBAJO DIRECCION s_o_n
+
+        
+
+        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVL R2, BYTEBAJO DIRECCION print_line
+        CALL R2
+
+        ask_replay:
+            MOVH R3, BYTEALTO DIRECCION clean_teclat
+            MOVL R3, BYTEBAJO DIRECCION clean_teclat
+            CALL R3
+            
+            MOVL R0, BYTEBAJO TECLAT        
+            MOVH R0, BYTEALTO TECLAT
+            INC R0
+            
+            MOVH R2,00000001b 			
+            MOVL R2,00000000b
+
+            no_tecla3:
+                MOV R4, [R0]
+                MOVL R4, 00h
+                COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
+            BRNZ no_tecla3
+
+            DEC R0
+            MOV R3,[R0]	
+            MOVH R3, 00h
+            MOVH R4, 00h
+            MOVL R4, 73h
+            COMP R3,R4
+            BRZ s_pressed
+            MOVL R4, 6Eh
+            COMP R3,R4
+            BRZ n_pressed
+            XOR R4,R4,R4
+        BRZ ask_replay
+
+        s_pressed:
+            MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+            MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+            CALL R3
+
+            MOVH R3, BYTEALTO DIRECCION Pintar_tauler
+            MOVL R3, BYTEBAJO DIRECCION Pintar_tauler
+            CALL R3
+            
+            MOVH R3, BYTEALTO DIRECCION torn_jug1
+            MOVL R3, BYTEBAJO DIRECCION torn_jug1
+            CALL R3
+        n_pressed:
+            MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+            MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+            CALL R3
+
+            MOVH R0, BYTEALTO PANTALLA 
+            MOVL R0, BYTEBAJO PANTALLA
+
+            MOVH R2, 00h
+            MOVL R2, 1Eh
+
+            ADD R3, R0, R2
+        
+            MOVH R4, BYTEALTO DIRECCION merci
+            MOVL R4, BYTEBAJO DIRECCION merci
+
+            
+
+            MOVH R2, BYTEALTO DIRECCION print_line
+            MOVL R2, BYTEBAJO DIRECCION print_line
+            CALL R2
+
+            MOVH R3, BYTEALTO DIRECCION fi
+            MOVL R3, BYTEBAJO DIRECCION fi
+            CALL R3
+        
     RET
 FIN
     
