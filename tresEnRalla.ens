@@ -6,11 +6,11 @@ INICIO ini
 .DATOS
 wins VALOR 111000000b,000111000b,000000111b,100010001b,001010100b,001001001b,010010010b,100100100b
 nom VALOR           " NOM JUGADOR  ?"
-name1 VALOR         "111111111111111"
-name2 VALOR         "               "
+name1 VALOR         "      "
+name2 VALOR         "      "
 torn VALOR          " TORN JUGADOR  "
 escriu VALOR        "Escriu         "
-campio VALOR        "CAMPIO         "
+campio VALOR        " CAMPIO        "
 tornarJugar VALOR   "TORNAR A JUGAR?"
 win_txt VALOR       "CAMPIO JUGADOR "
 rply_txt VALOR      "TORNAR A JUGAR?"
@@ -20,16 +20,30 @@ fila4 VALOR 0,0,0
 fila5 VALOR 0,0,0
 fila6 VALOR 0,0,0
 fila7 VALOR 0,0,0
+miss1 VALOR         "Casella ocupada"
+miss2 VALOR         "Pulsa solo 123 "
 adios VALOR         "Adios:         "
 
 .CODIGO
 ini:
+    MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+	MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+    CALL R3
+	
+    MOVH R3, BYTEALTO DIRECCION NOM_1
+	MOVL R3, BYTEBAJO DIRECCION NOM_1
+    CALL R3
+
 	MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
 	MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
     CALL R3
 	
-    MOVH R3, BYTEALTO DIRECCION replay
-	MOVL R3, BYTEBAJO DIRECCION replay
+    MOVH R3, BYTEALTO DIRECCION NOM_2
+	MOVL R3, BYTEBAJO DIRECCION NOM_2
+    CALL R3
+
+    MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+	MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
     CALL R3
 
 	MOVH R3, BYTEALTO DIRECCION Pintar_tauler
@@ -95,9 +109,6 @@ ini:
     RET
 
     NOM_1:
-        POP R6
-        POP R6
-        POP R6
         MOVH R0, BYTEALTO PANTALLA 
         MOVL R0, BYTEBAJO PANTALLA
         MOV R3, R0
@@ -113,10 +124,6 @@ ini:
 
         MOVH R4, BYTEALTO DIRECCION nom
         MOVL R4, BYTEBAJO DIRECCION nom
-
-        POP R6
-        POP R6
-        POP R6
 
         MOVH R2, BYTEALTO DIRECCION print_line
         MOVL R2, BYTEBAJO DIRECCION print_line
@@ -139,12 +146,12 @@ ini:
         MOVL R3, BYTEBAJO DIRECCION name1
 
         MOVH R4, 00h
-        MOVL R4, 0Fh
+        MOVL R4, 06h
 
         XOR R5, R5, R5
-        inf:
+        inf1:
             
-            wait_char:
+            wait_char1:
                 PUSH R3
                 PUSH R4
 
@@ -155,7 +162,7 @@ ini:
 
                 INC R5
                 XOR R6,R6,R6
-                MOVL R6, 6
+                MOVL R6, 10
                 COMP R6,R5
                 BRNZ skip2
                 MOVL R5, 97
@@ -178,11 +185,11 @@ ini:
                 MOV R4, [R1]
                 MOVL R4, 00h
                 SUB R6,R4,R3
-                POP R3
                 POP R4
+                POP R3
                 DEC R1
                 AND R6,R6,R6
-            BRNZ wait_char
+            BRNZ wait_char1
             MOV R6, [R1]
             MOV [R3], R6
             INC R3
@@ -210,789 +217,1033 @@ ini:
             POP R4
             POP R2			
 
-            ;CLEAN TECLAT 
             
+            PUSH R3
+            DEC R4
+            PUSH R4
+            INC R4
             DEC R4
             BRZ acabado
+            POP R4
+            POP R3
             DEC R2
-        BRNZ inf
+
+            
+        BRNZ inf1
 
         acabado:
-            AND R0, R0, R0
+            POP R4
+            POP R3            
+            XOR R6,R6,R6
+            MOV R5,R6
         
     RET
         
-    
-    
-    Pintar_tauler:
-        PUSH R0
-        PUSH R2
-        PUSH R3
-        PUSH R4
-
-        MOVH R4, 00h                  		
-        MOVL R4, 10
-
+    NOM_2:
         MOVH R0, BYTEALTO PANTALLA 
         MOVL R0, BYTEBAJO PANTALLA
-        MOVH R3,  00h
-        MOVL R3,  47                            	                                                       
-        ADD R3, R0, R3        
-        MOVH R2, 00000111b                     		
-        MOVL R2, 43h                          		         
+        MOV R3, R0
+        XOR R4, R4, R4
+        MOVL R4, 97
+
+        ADD R3, R3, R4
+        MOVH R4, 00000111b
+        MOVL R4, 39h
+        MOV [R3], R4
+        MOV R3, R0
+        XOR R4, R4, R4
+
+        MOVH R4, BYTEALTO DIRECCION nom
+        MOVL R4, BYTEBAJO DIRECCION nom
+
+        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVL R2, BYTEBAJO DIRECCION print_line
+        CALL R2
+
+        XOR R2,R2,R2
+        MOVL R2, 02h
+        SUB R3, R3, R2
+        MOVH R2, 03h
+        MOVL R2, 32h
         MOV [R3], R2
 
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 4Fh                          		         
-        MOV [R3], R2
+        MOVH R1, BYTEALTO TECLAT
+        MOVL R1, BYTEBAJO TECLAT
 
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 4Ch                          		         
-        MOV [R3], R2
+        MOVH R2, 00h
+        MOVL R2, 50h
 
-        INC R3
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 31h                          		         
-        MOV [R3], R2
+        MOVH R3, BYTEALTO DIRECCION name2
+        MOVL R3, BYTEBAJO DIRECCION name2
 
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 32h                          		         
-        MOV [R3], R2
+        MOVH R4, 00h
+        MOVL R4, 06h
 
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 33h                          		         
-        MOV [R3], R2
+        XOR R5, R5, R5
+        inf2:
+            
+            wait_char2:
+                PUSH R3
+                PUSH R4
 
+                INC R1
+                
+                MOVH R3,00000001b 			
+                MOVL R3,00000000b
+
+                INC R5
+                XOR R6,R6,R6
+                MOVL R6, 10
+                COMP R6,R5
+                BRNZ skip22
+                MOVL R5, 97
+                ADD R0, R5, R0
+                
+                MOV R6, [R0]
+                DEC R6
+                MOV [R0], R6
+
+                SUB R0, R0, R5
+                XOR R5,R5,R5
+                
+                skip22:
+                    AND R5,R5,R5
+                
+                DEC R2
+                BRZ acabado2
+
+
+                MOV R4, [R1]
+                MOVL R4, 00h
+                SUB R6,R4,R3
+                POP R4
+                POP R3
+                DEC R1
+                AND R6,R6,R6
+            BRNZ wait_char2
+            MOV R6, [R1]
+            MOV [R3], R6
+            INC R3
+            
+            MOVH R6, 11b 			
+            PUSH R2
+            PUSH R4
+            XOR R2, R2, R2
+            MOVL R2, 30
+            
+            MOVH R4, BYTEALTO DIRECCION name2
+            MOVL R4, BYTEBAJO DIRECCION name2
+
+            SUB R4, R3, R4
+            ADD R2, R2, R4
+
+            MOVH R0, BYTEALTO PANTALLA 
+            MOVL R0, BYTEBAJO PANTALLA
+
+            ADD R0, R2, R0
+            
+            MOV [R0], R6
+            SUB R0, R0, R2
+            
+            POP R4
+            POP R2			
+
+            
+            PUSH R3
+            DEC R4
+            PUSH R4
+            INC R4
+            DEC R4
+            BRZ acabado2
+            POP R4
+            POP R3
+            DEC R2
+
+            
+        BRNZ inf2
+
+        acabado2:
+            POP R4
+            POP R3            
+            XOR R6,R6,R6
+            MOV R5,R6
         
-        ADD R3,R4,R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 46h                          		         
-        MOV [R3], R2
+    RET
+    
+    Pintar_tauler:                   ; Dibuixa la capçalera del tauler i les etiquetes de fila i columna a la pantalla
+
+        PUSH R0                 ; Guardem R0 
+        PUSH R2                 ; Guardem R2
+        PUSH R3                 ; Guardem R3 
+        PUSH R4                 ; Guardem R4 
+
+        MOVH R4, 00h            
+        MOVL R4, 10             
+
+        MOVH R0, BYTEALTO PANTALLA ; Carreguem a R0 l'adreça base de la pantalla 
+        MOVL R0, BYTEBAJO PANTALLA ; Carreguem a R0 l'adreça base de la pantalla 
+
+        MOVH R3, 00h            ; Inicialitzem offset dins la pantalla
+        MOVL R3, 47             ; 47 -> posició inicial per començar a escriure
+
+        ADD R3, R0, R3          ; R3 = adreça base + 47h -> posició d'inici d'impressió
+
+        ; Dibuix de la paraula "COL" 
+        MOVH R2, 00000111b      
+        MOVL R2, 43h            ; 'C'
+        MOV [R3], R2            ; Escriu 'C'
+
+        INC R3
+        MOVH R2, 00000111b
+        MOVL R2, 4Fh            ; 'O'
+        MOV [R3], R2            ; Escriu 'O'
+
+        INC R3
+        MOVH R2, 00000111b
+        MOVL R2, 4Ch            ; 'L'
+        MOV [R3], R2            ; Escriu 'L'
+
+        ; Dibuix dels números de columna: 1, 2, 3
+        INC R3                  ; Espai entre "COL" i els números
+        INC R3
+        MOVH R2, 00000111b
+        MOVL R2, 31h            ; '1'
+        MOV [R3], R2            ; Escriu '1'
+
+        INC R3
+        MOVH R2, 00000111b
+        MOVL R2, 32h            ; '2'
+        MOV [R3], R2            ; Escriu '2'
+
+        INC R3
+        MOVH R2, 00000111b
+        MOVL R2, 33h            ; '3'
+        MOV [R3], R2            ; Escriu '3'
+
+        ADD R3, R4, R3          ; Salt de línia
+        MOVH R2, 00000111b
+        MOVL R2, 46h            ; 'F'
+        MOV [R3], R2            ; Escriu 'F'
 
         INC R3
         INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 31h                          		         
-        MOV [R3], R2
+        MOVH R2, 00000111b
+        MOVL R2, 31h            ; '1'
+        MOV [R3], R2            ; Escriu '1'
 
-        CALL tres_blancs
-       
-        ADD R3,R4,R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 49h                          		         
-        MOV [R3], R2
-
-        INC R3
-        INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 32h                          		         
-        MOV [R3], R2
-
-        CALL tres_blancs
+        CALL tres_blancs        ; Crida per imprimir 3 espais 
 
         ADD R3, R4, R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 4Ch                          		         
-        MOV [R3], R2
+        MOVH R2, 00000111b
+        MOVL R2, 49h            ; 'I'
+        MOV [R3], R2            ; Escriu 'I'
 
         INC R3
         INC R3
-        MOVH R2, 00000111b                     		
-        MOVL R2, 33h                          		         
-        MOV [R3], R2
+        MOVH R2, 00000111b
+        MOVL R2, 32h            ; '2'
+        MOV [R3], R2            ; Escriu '2'
 
-        CALL tres_blancs
+        CALL tres_blancs        ; Imprimeix 3 espais 
 
+        ADD R3, R4, R3
+        MOVH R2, 00000111b
+        MOVL R2, 4Ch            ; 'L'
+        MOV [R3], R2            ; Escriu 'L'
+
+        INC R3
+        INC R3
+        MOVH R2, 00000111b
+        MOVL R2, 33h            ; '3'
+        MOV [R3], R2            ; Escriu '3'
+
+        CALL tres_blancs        ; Imprimeix 3 espais 
+
+        ; Restauració dels registres utilitzats 
         POP R4
         POP R3
         POP R2
         POP R0
-    RET
+    RET                          
 
-    tres_blancs:
-        INC R3
-        MOVH R2, 00111111b                     		
-        MOVL R2, 00h                          		         
-        MOV [R3], R2
 
-        INC R3
-        MOVH R2, 00111111b                     		
-        MOVL R2, 00h                          		         
-        MOV [R3], R2
+    tres_blancs:                  ; Imprimeix tres espais blancs buits al tauler de joc
 
-        INC R3
-        MOVH R2, 00111111b                     		
-        MOVL R2, 00h                          		         
-        MOV [R3], R2
-    RET
+        INC R3                    ; Avancem a la primera posició de casella
+        MOVH R2, 00111111b        
+        MOVL R2, 00h              
+        MOV [R3], R2              ; Escrivim un espai buit
 
+        INC R3                    ; Següent posició
+        MOVH R2, 00111111b       
+        MOVL R2, 00h              
+        MOV [R3], R2              ; Escrivim el segon espai buit
+
+        INC R3                    ; Següent posició
+        MOVH R2, 00111111b        
+        MOVL R2, 00h              
+        MOV [R3], R2              ; Escrivim el tercer espai buit
+
+    RET                           
     
-    torn_jug1:
+    torn_jug1:                        ; Controla tot el torn del jugador 1: imprimeix el missatge, llegeix FILA i COLUMNA, valida i comprova victòria
+
         MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
+        MOVL R0, BYTEBAJO PANTALLA 
 
         MOVH R1, 00h
-        MOVL R1, 01h
+        MOVL R1, 01h               ; R1 = 0001h -> identificador del jugador 1
 
-        MOV R3, R0
-        MOVH R4, BYTEALTO DIRECCION torn
+        MOV R3, R0                 ; R3 apunta també a la pantalla
+
+        MOVH R4, BYTEALTO DIRECCION torn 
         MOVL R4, BYTEBAJO DIRECCION torn
 
-        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVH R2, BYTEALTO DIRECCION print_line 
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
+        CALL R2                   
 
-        DEC R3
-        MOVH R2, 00000011b                     		
-        MOVL R2, 31h                          		         
-        MOV [R3], R2
+        ; Escrivim el número de jugador 1 després del text 
+        DEC R3                    ; Retrocedim una posició de pantalla
+        MOVH R2, 00000011b
+        MOVL R2, 31h              ; '1' 
+        MOV [R3], R2              ; Escrivim el número 1 a la pantalla
 
-        INC R3
+        INC R3                    ; Tornem a la següent posició
         MOVH R4, BYTEALTO DIRECCION escriu
-        MOVL R4, BYTEBAJO DIRECCION escriu
+        MOVL R4, BYTEBAJO DIRECCION escriu 
 
         MOVH R2, BYTEALTO DIRECCION print_line
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
-        
+        CALL R2                   
+
+        ; Ens desplacem 8 posicions enrere a la pantalla per escriure "FIL:" 
         XOR R2, R2, R2
         MOVL R2, 08h
-        SUB R3, R3, R2
+        SUB R3, R3, R2            ; R3 = posició de pantalla - 8
 
         MOVH R2, BYTEALTO DIRECCION print_FIL
         MOVL R2, BYTEBAJO DIRECCION print_FIL
-        CALL R2
-
-        
+        CALL R2                   
 
         MOVH R3, BYTEALTO DIRECCION wait_FIL
         MOVL R3, BYTEBAJO DIRECCION wait_FIL
-        CALL R3
+        CALL R3                   
 
         MOVH R3, BYTEALTO DIRECCION print_COL
         MOVL R3, BYTEBAJO DIRECCION print_COL
-        CALL R3
+        CALL R3                   
 
         MOVH R3, BYTEALTO DIRECCION wait_COL
         MOVL R3, BYTEBAJO DIRECCION wait_COL
-        CALL R3
+        CALL R3                  
 
         MOVH R3, BYTEALTO DIRECCION check_pos
         MOVL R3, BYTEBAJO DIRECCION check_pos
-        CALL R3
+        CALL R3                   
 
         MOVH R3, BYTEALTO DIRECCION tres_ratlla
         MOVL R3, BYTEBAJO DIRECCION tres_ratlla
-        CALL R3
+        CALL R3                   
 
-    RET
-    
-    torn_jug2:
-        MOVH R1, 00h
+    RET                           
+
+    torn_jug2:                        ; Gestiona el torn del jugador 2: imprimeix el missatge, llegeix FILA i COLUMNA, valida i comprova victòria
+
+        MOVH R1, 00h               ; R1 = 0002h -> identificador del jugador 2
         MOVL R1, 02h
 
         MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
-        MOV R3, R0
-        MOVH R4, BYTEALTO DIRECCION torn
+        MOVL R0, BYTEBAJO PANTALLA 
+
+        MOV R3, R0                 ; R3 apunta a la pantalla 
+        MOVH R4, BYTEALTO DIRECCION torn 
         MOVL R4, BYTEBAJO DIRECCION torn
 
-        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVH R2, BYTEALTO DIRECCION print_line 
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
+        CALL R2                    
 
-        DEC R3
-        MOVH R2, 00000011b                     		
-        MOVL R2, 32h                          		         
-        MOV [R3], R2
+        DEC R3                     ; Retrocedeix una posició per escriure el número de jugador
+        MOVH R2, 00000011b         
+        MOVL R2, 32h               ; '2' 
+        MOV [R3], R2               ; Escriu el número 2
 
-        INC R3
-        MOVH R4, BYTEALTO DIRECCION escriu
+        INC R3                     ; Avança a la següent posició
+        MOVH R4, BYTEALTO DIRECCION escriu 
         MOVL R4, BYTEBAJO DIRECCION escriu
 
-        MOVH R2, BYTEALTO DIRECCION print_line
+        MOVH R2, BYTEALTO DIRECCION print_line 
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
-        
-        XOR R2, R2, R2
-        MOVL R2, 08h
-        SUB R3, R3, R2
+        CALL R2                    
 
-        MOVH R2, BYTEALTO DIRECCION print_FIL
+        XOR R2, R2, R2             ; R2 = 0
+        MOVL R2, 08h               ; R2 = 8 
+        SUB R3, R3, R2             ; R3 = posició actual - 8 -> col·loca cursor per "FIL:"
+
+        MOVH R2, BYTEALTO DIRECCION print_FIL 
         MOVL R2, BYTEBAJO DIRECCION print_FIL
-        CALL R2
+        CALL R2                    
 
-        
-
-        MOVH R3, BYTEALTO DIRECCION wait_FIL
+        MOVH R3, BYTEALTO DIRECCION wait_FIL 
         MOVL R3, BYTEBAJO DIRECCION wait_FIL
-        CALL R3
+        CALL R3                    
 
-        MOVH R3, BYTEALTO DIRECCION print_COL
+        MOVH R3, BYTEALTO DIRECCION print_COL 
         MOVL R3, BYTEBAJO DIRECCION print_COL
-        CALL R3
+        CALL R3                    
 
-        MOVH R3, BYTEALTO DIRECCION wait_COL
+        MOVH R3, BYTEALTO DIRECCION wait_COL 
         MOVL R3, BYTEBAJO DIRECCION wait_COL
-        CALL R3
+        CALL R3                    
 
-        MOVH R3, BYTEALTO DIRECCION check_pos
+        MOVH R3, BYTEALTO DIRECCION check_pos 
         MOVL R3, BYTEBAJO DIRECCION check_pos
-        CALL R3
+        CALL R3                    
 
-        MOVH R3, BYTEALTO DIRECCION tres_ratlla
+        MOVH R3, BYTEALTO DIRECCION tres_ratlla 
         MOVL R3, BYTEBAJO DIRECCION tres_ratlla
-        CALL R3
-    RET
+        CALL R3                    
+    RET                          
+
     
-    print_FIL:
-        PUSH R0
-        PUSH R2
+    print_FIL:                        ; Mostra el text "FIL:" a la línia +1 del tauler per indicar que s'introdueixi la fila
+
+        PUSH R0                   ; Guardem R0 
+        PUSH R2                   ; Guardem R2 
+
         MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
+        MOVL R0, BYTEBAJO PANTALLA 
 
-        XOR R3,R3,R3
-        MOVL R3, 16h
-        ADD R3,R0,R3
+        XOR R3, R3, R3            ; 0
+        MOVL R3, 16h              ; 16h 
+        ADD R3, R0, R3            ; R3 = adreça base + 16h -> posició per imprimir “FIL:”
 
-        MOVH R2, 00000011b                     		
-        MOVL R2, 46h                          		         
-        MOV [R3], R2
-        INC R3
+        MOVH R2, 00000011b        
+        MOVL R2, 46h              ; 'F'
+        MOV [R3], R2              ; Escriu 'F'
 
-        MOVL R2, 49h                          		         
-        MOV [R3], R2
-        INC R3
+        INC R3                    ; Avança una posició
+        MOVL R2, 49h              ; 'I'
+        MOV [R3], R2              ; Escriu 'I'
 
-        MOVL R2, 4Ch                          		         
-        MOV [R3], R2
-        INC R3
+        INC R3                    ; Avança una posició
+        MOVL R2, 4Ch              ; 'L'
+        MOV [R3], R2              ; Escriu 'L'
 
-        MOVL R2, 3Ah                          		         
-        MOV [R3], R2
-        INC R3
+        INC R3                    ; Avança una posició
+        MOVL R2, 3Ah              ; ':'
+        MOV [R3], R2              ; Escriu ':'
 
-        POP R2
-        POP R0
-    RET
+        INC R3                    ; Avança el cursor per a la lectura posterior
 
-    print_COL:
-        PUSH R0
-        PUSH R2
+        POP R2                    ; Recuperem R2
+        POP R0                    ; Recuperem R0
+    RET                          
+
+
+    print_COL:                        ; Mostra el text "COL:" a la línia +1 del tauler per indicar que s'introdueixi la columna
+
+        PUSH R0                    ; Guardem R0 
+        PUSH R2                    ; Guardem R2 
+
         MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
+        MOVL R0, BYTEBAJO PANTALLA 
 
-        XOR R3,R3,R3
-        MOVL R3, 16h
-        ADD R3,R0,R3
+        XOR R3, R3, R3             ; R3 <- 0
+        MOVL R3, 16h               ; 16h 
+        ADD R3, R0, R3             ; R3 = adreça base + 16h -> posició per imprimir “COL:”
 
-        MOVH R2, 00000011b                     		
-        MOVL R2, 43h                          		         
-        MOV [R3], R2
-        INC R3
+        MOVH R2, 00000011b         
+        MOVL R2, 43h               ; 'C'
+        MOV [R3], R2               ; Escriu 'C'
 
-        MOVL R2, 4Fh                          		         
-        MOV [R3], R2
-        INC R3
+        INC R3                     ; Avança una posició
+        MOVL R2, 4Fh               ; 'O'
+        MOV [R3], R2               ; Escriu 'O'
 
-        MOVL R2, 4Ch                          		         
-        MOV [R3], R2
-        INC R3
+        INC R3                     ; Avança una posició
+        MOVL R2, 4Ch               ; 'L'
+        MOV [R3], R2               ; Escriu 'L'
 
-        POP R2
-        POP R0
-    RET
+        INC R3                     ; Avança el cursor per a la lectura posterior
+
+        POP R2                     ; Recuperem R2
+        POP R0                     ; Recuperem R0
+    RET                           
+
     
-    print_line:
-        PUSH R0
-        PUSH R1
-        PUSH R2
-        PUSH R4
-        
-        XOR R0,R0,R0
-        MOVL R0, 0Fh
-        XOR R1,R1,R1
+    print_line:                       ; Imprimeix una línia de caràcters a la pantalla 
+
+        PUSH R0                   ; Guardem R0 
+        PUSH R1                   ; Guardem R1 
+        PUSH R2                   ; Guardem R2 
+        PUSH R4                   ; Guardem R4 
+
+        XOR R0, R0, R0            ; R0 ← 0
+        MOVL R0, 0Fh              ; 0Fh (15 decimal) -> longitud màxima de la línia
+
+        XOR R1, R1, R1            ; R1 <- 0 
+
         print_char:
-            MOV R2, [R4]   
-            MOVH R2, 00000111b
+            MOV R2, [R4]              ; R2 <- byte de dades de la cadena a l'adreça R4
+            MOVH R2, 00000111b        
 
-            MOV [R3], R2
-            INC R1
-            INC R3
-            INC R4
-            COMP R0,R1
-        BRNZ print_char
+            MOV [R3], R2              ; Escrivim el caràcter amb atributs a la pantalla
+            INC R1                    ; Incrementem l'índex de caràcters processats
+            INC R3                    ; Avancem el cursor de pantalla
+            INC R4                    ; Avancem el punter de la cadena
 
-        POP R4
-        POP R2
-        POP R1
-        POP R0
-    RET
+            COMP R0, R1               ; Comparem R1 amb R0
+        BRNZ print_char           ; Si R1 != R0, seguim imprimint
+
+        POP R4                    ; Recuperem R4
+        POP R2                    ; Recuperem R2
+        POP R1                    ; Recuperem R1
+        POP R0                    ; Recuperem R0
+    RET 
+
+    print_name:                       ; Imprimeix una línia de caràcters que representa un username a la pantalla 
+
+        PUSH R0                   ; Guardem R0 
+        PUSH R1                   ; Guardem R1 
+        PUSH R2                   ; Guardem R2 
+        PUSH R4                   ; Guardem R4 
+
+        XOR R0, R0, R0            ; R0 ← 0
+        MOVL R0, 06h              ; 06h (6 decimal) -> longitud màxima del nom
+
+        XOR R1, R1, R1            ; R1 <- 0 
+
+        print_char_name:
+            MOV R2, [R4]              ; R2 <- byte de dades de la cadena a l'adreça R4
+            MOVH R2, 0000011b        
+
+            MOV [R3], R2              ; Escrivim el caràcter amb atributs a la pantalla
+            INC R1                    ; Incrementem l'índex de caràcters processats
+            INC R3                    ; Avancem el cursor de pantalla
+            INC R4                    ; Avancem el punter de la cadena
+
+            COMP R0, R1               ; Comparem R1 amb R0
+        BRNZ print_char_name           ; Si R1 != R0, seguim imprimint
+
+        POP R4                    ; Recuperem R4
+        POP R2                    ; Recuperem R2
+        POP R1                    ; Recuperem R1
+        POP R0                    ; Recuperem R0
+    RET                           
+
 
     fi:
         JMP -1
     RET
     
-    wait_FIL:
-        
-        wait_tecla:; Aquest bucle comprova si s'ha pitjat una tecla
+    wait_FIL:                      ; Espera fins que l'usuari premi una tecla i retorna el valor de la fila (1-3)
+
+        wait_tecla:                    ; Bucle que neteja el teclat i comprova si hi ha una tecla al buffer
             MOVH R3, BYTEALTO DIRECCION clean_teclat
             MOVL R3, BYTEBAJO DIRECCION clean_teclat
-            CALL R3
-            
-            MOVL R0, BYTEBAJO TECLAT        
-            MOVH R0, BYTEALTO TECLAT
-            INC R0
-            
-            MOVH R2,00000001b 			
-            MOVL R2,00000000b
+            CALL R3                    
 
-            no_tecla:
-                MOV R4, [R0]
-                MOVL R4, 00h
-                COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
-            BRNZ no_tecla
+            MOVL R0, BYTEBAJO TECLAT   
+            MOVH R0, BYTEALTO TECLAT   
 
-            DEC R0
-            MOV R3,[R0]				
-            
-            MOVH R2, 00h
-            MOVH R3, 00h
-            MOVL R2, 31h
+            INC R0                     ; Ens situem al registre de dades del teclat
 
-            COMP R3,R2; 
-            BRZ fil_is_one
-            
-            MOVL R2, 32h
-            COMP R3,R2; 
-            BRZ fil_is_two
+            MOVH R2, 00000001b         ; R2  per comprovar bit 8 
+            MOVL R2, 00000000b         ; R2 valor de comparació (0)
 
-            MOVL R2, 33h
-            COMP R3,R2; 
-            BRZ fil_is_three
+        no_tecla:                      ; Espera activa fins que hi hagi dades al buffer
+            MOV R4, [R0]               ; R4 <- contingut del registre de dades
+            MOVL R4, 00h               ; Reset byte alt de R4
+            COMP R4, R2                ; Compara R4 amb 0 per veure si el buffer està buit
+            BRNZ no_tecla              ; Si R4 != 0 (no hi ha tecles), torna a comprovar
 
-            COMP R3,R2; 
-            BRNZ wait_tecla
-            
-        
-            fil_is_one:
-                XOR R2,R2,R2
-                MOVL R2, 01h
-                RET
-                
-            
-            fil_is_two:
-                XOR R2,R2,R2
-                MOVL R2, 02h
-                RET
-                
-            
-            fil_is_three:
-                XOR R2,R2,R2
-                MOVL R2, 03h
-                RET
+        ; Quan aquí, s’ha premut una tecla -> llegim codi ASCII
+            DEC R0                     ; Retrocedim a la posició del byte baix (ASCII)
+            MOV R3, [R0]               ; R3 ← codi ASCII de la tecla
+
+            MOVH R2, 00h               ; R2 neteja part alta
+            MOVH R3, 00h               ; R3 neteja part alta
+            MOVL R2, 31h               ; '1' 
+
+            COMP R3, R2                ; Compara si és un '1'
+            BRZ fil_is_one             
+
+            MOVL R2, 32h               ; '2'
+            COMP R3, R2                ; Compara si és un '2'
+            BRZ fil_is_two             
+
+            MOVL R2, 33h               ; '3'
+            COMP R3, R2                ; Compara si és un '3'
+            BRZ fil_is_three           
+
+            COMP R3, R2                ; Compara R3 amb R2 
+            BRNZ wait_tecla            ; Si no és cap de l'anterior, esperem una altra tecla
+
+        fil_is_one:
+            XOR R2, R2, R2             ; R2 <- 0
+            MOVL R2, 01h               ;1
+            RET                        
+
+        fil_is_two:
+            XOR R2, R2, R2             ; R2 <- 0
+            MOVL R2, 02h               ; 2
+            RET                        
+
+        fil_is_three:
+            XOR R2, R2, R2             ; R2 <- 0
+            MOVL R2, 03h               ; 3
+    RET                        
+
    
 
-    wait_COL:
+    wait_COL:                          ; Espera una tecla del teclat i retorna 1, 2 o 3 segons la columna escollida
+
         wait_tecla2:
-            PUSH R2
+            PUSH R2                    ; Guardem R2 
 
             MOVH R3, BYTEALTO DIRECCION clean_teclat
             MOVL R3, BYTEBAJO DIRECCION clean_teclat
-            CALL R3
-            INC R0
-                
-            MOVH R2,00000001b 			
-            MOVL R2,00000000b
+            CALL R3                    
 
-            no_tecla2:
-                MOV R4, [R0]
-                MOVL R4, 00h
-                COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
-            BRNZ no_tecla2
+            INC R0                     ; Ens col·loquem al registre de dades del teclat (TECLAT + 1)
 
-            DEC R0
-            MOV R3,[R0]				
-            
-            MOVH R4, 00h
-            MOVH R3, 00h
-            MOVL R4, 31h
+            MOVH R2, 00000001b
+            MOVL R2, 00000000b         ; R2 <- 0 -> valor de comparació per saber si hi ha tecla
 
-            POP R2
-            COMP R3,R4; 
-            BRZ col_is_one
-            
-            MOVL R4, 32h
-            COMP R3,R4; 
-            BRZ col_is_two
+        no_tecla2:                     ; Espera activa fins que s'hagi premut una tecla
+            MOV R4, [R0]               ; R4 <- contingut del registre de dades
+            MOVL R4, 00h               ; Neteja el byte alt
+            COMP R4, R2                ; Compara amb 0 (esperem a que el buffer contingui una tecla)
+            BRNZ no_tecla2            ; Si no s'ha premut res, seguim esperant
 
-            MOVL R4, 33h
-            COMP R3,R4; 
-            BRZ col_is_three
+            DEC R0                     ; Retrocedim al byte baix del teclat (conté el codi ASCII)
+            MOV R3, [R0]               ; R3 <- codi ASCII de la tecla premuda
 
-            COMP R3,R4; 
-            BRNZ wait_tecla2
+            MOVH R4, 00h               ; Neteja part alta de R4
+            MOVH R3, 00h               ; Neteja part alta de R3 per assegurar validesa en comparació
+            MOVL R4, 31h               ; R4 <- '1'
 
-           
+            POP R2                     ; Recuperem R2 
 
-            col_is_one:
-                XOR R4,R4,R4
-                MOVL R4, 01h
-                RET
-                
-            
-            col_is_two:
-                XOR R4,R4,R4
-                MOVL R4, 02h
-                RET
-                
-            
-            col_is_three:
-                XOR R4,R4,R4
-                MOVL R4, 03h
-                RET
+            COMP R3, R4                ; Compara tecla premuda amb '1'
+            BRZ col_is_one             ; Si és '1', retornarem 1
+
+            MOVL R4, 32h               ; R4 <- '2'
+            COMP R3, R4
+            BRZ col_is_two             ; Si és '2', retornarem 2
+
+            MOVL R4, 33h               ; R4 <- '3'
+            COMP R3, R4
+            BRZ col_is_three           ; Si és '3', retornarem 3
+
+            COMP R3, R4                ; Comprovació final
+            BRNZ wait_tecla2           ; Si no és cap tecla vàlida, tornem a esperar
+
+        ; Retorns per cada cas correcte
+        col_is_one:
+            XOR R4, R4, R4
+            MOVL R4, 01h               ; R4 <- 1 (columna 1)
+            RET
+
+        col_is_two:
+            XOR R4, R4, R4
+            MOVL R4, 02h               ; R4 <- 2 (columna 2)
+            RET
+
+        col_is_three:
+            XOR R4, R4, R4
+            MOVL R4, 03h               ; R4 <- 3 (columna 3)
+            RET
+
     
-    check_pos:
-        PUSH R1
-        PUSH R2
-        PUSH R4
-        PUSH R0
-        
+    check_pos:                    ; Comprova i processa la posició seleccionada (fila R2, columna R4)
+        PUSH R1                   ; Guardem R1 
+        PUSH R2                   ; Guardem R2 
+        PUSH R4                   ; Guardem R4 
+        PUSH R0                   ; Guardem R0 
 
-        DEC R2
-        XOR R1,R1,R1
-        MOVL R1, 03h
-        XOR R0,R0,R0
-        MUL:
-            ADD R0, R2, R0
-            DEC R1
-        BRNZ MUL
+        DEC R2                    ; R2 <- fila - 1 
+        XOR R1, R1, R1            ; R1 <- 0 (contador de multiplicacions)
+        MOVL R1, 03h              ; R1 <- 3 (tret per calcular 3*(fila-1))
+        XOR R0, R0, R0            ; R0 <- 0 (acumulador d'índex)
 
-        ADD R0, R0, R4
-       
-        DEC R0
-        COMP R0, R1
-        BRZ zero_pow
-        MOVL R1, 01h
+        MUL:                         ; Bucle per fer R0 += R2, 3 vegades
+            ADD R0, R2, R0           ; R0 <- R0 + (fila-1)
+            DEC R1                   ; R1 <- R1 - 1
+            BRNZ MUL                 ; Si R1 != 0, repeteix -> al final R0 = 3*(fila-1)
 
-        POW:
-            ADD R1, R1, R1
-            DEC R0
-        BRNZ POW
-        
-        XOR R0,R0,R0
-        BRZ check
-        zero_pow:
-            INC R1
-            BRNZ check
+            ADD R0, R0, R4           ; R0 <- R0 + columna → R0 = (fila-1)*3 + columna
 
-        check:
-            OR R0,R5,R6
-            AND R3,R0,R1
-            POP R0
-            POP R4
-            POP R2
-            AND R3,R3,R3
-            BRZ skip
-            
-            
-            POP R1
-            PUSH R1
+            DEC R0                   ; R0 <- R0 - 1 
+
+            COMP R0, R1              ; Compara índex amb R1 (actualment 3 o 1)
+            BRZ zero_pow             ; Si igual, salta a zero_pow (cas R0=R1)
+            MOVL R1, 01h             ; Altrament, preajusta R1 = 1
+
+        POW:                         ; Bucle per calcular R1 = 2^R0
+            ADD R1, R1, R1           ; R1 <- R1 * 2
+            DEC R0                   ; R0 <- R0 - 1
+            BRNZ POW                 
+
+            XOR R0, R0, R0           ; R0 <- 0 
+            BRZ check                
+
+        zero_pow:                    ; Si R0 = R1, correspon a 2^0 = 1
+            INC R1                   ; R1 <- 1
+            BRNZ check               
+
+                check:               ; Verifica si la casella està lliure R5 (jug1) i R6 (jug2)
+            OR R0, R5, R6            ; R0 <- totes les caselles ocupades
+            AND R3, R0, R1           ; R3 ← R0 i casella actual (R1 = 2^índex)
+            POP R0                   ; Recuperem R0 
+            POP R4                   ; Recuperem R4 
+            POP R2                   ; Recuperem R2 
+            AND R3, R3, R3           ; R3 <- 0 
+            BRZ skip                 
+            ;Si està ocupada, demana novament fila i columna
+            POP R1                   ; Recuperem R1 
+            PUSH R1                  ; Guardem R1
+
             MOVH R3, BYTEALTO DIRECCION print_FIL
             MOVL R3, BYTEBAJO DIRECCION print_FIL
-            CALL R3
+            CALL R3                  
 
             MOVH R3, BYTEALTO DIRECCION wait_FIL
             MOVL R3, BYTEBAJO DIRECCION wait_FIL
-            CALL R3
+            CALL R3                  
 
             MOVH R3, BYTEALTO DIRECCION print_COL
             MOVL R3, BYTEBAJO DIRECCION print_COL
-            CALL R3
+            CALL R3                  
 
             MOVH R3, BYTEALTO DIRECCION wait_COL
             MOVL R3, BYTEBAJO DIRECCION wait_COL
-            CALL R3
-            
-            
-            XOR R0, R0, R0
-            POP R1
-            COMP R0,R0
-            BRZ check_pos
-                
+            CALL R3                  
 
-            skip:
-                MOV R3,R1
-                
+            XOR R0, R0, R0           ; R0 <- 0 
+            POP R1                   ; Recuperem R1 
+            COMP R0, R0              ; Sempre zero, preparació per salt
+            BRZ check_pos            ; Torna a validar posició
+                    
 
-            POP R1
-            PUSH R1
-            PUSH R2
-            PUSH R4
-            
-            XOR R4,R4,R4
-            MOVL R4, 01h
-            COMP R4,R1
-            BRZ JUG_1
-            OR R6,R6,R3
-            COMP R6, R6
-            BRZ refresh_pile
-            JUG_1:
-                OR R5,R5,R3
+                skip:                 ; Continuació després de verificar que la casella està lliure
 
-            refresh_pile:
-                XOR R3,R3,R3
+            MOV R3, R1                ; R3 <- casella actual (2^índex)
 
-        print:
+            POP R1                    ; Recuperem R1 
+            PUSH R1                   ; Guardem R1
+            PUSH R2                   ; Guardem R2 
+            PUSH R4                   ; Guardem R4 
+
+            XOR R4, R4, R4            ; R4 <- 0
+            MOVL R4, 01h              ; R4 <- 1
+            COMP R4, R1               ; Compara si és jugador 1 
+            BRZ JUG_1                 ; Si és fila 1, salta a JUG_1 (jugador 1)
+
+            OR R6, R6, R3             ; Si no, és jugador 2 -> marca la casella a R6
+            COMP R6, R6               ; Salt incondicional per procedir
+            BRZ refresh_pile          ; (sempre true) -> salta a refresh_pile
+
+        JUG_1:
+            OR R5, R5, R3             ; Marca la casella a R5 (jugador 1)
+
+        refresh_pile:
+            XOR R3, R3, R3            ; R3 <- 0
+
+
+            print:                     ; Pinta la fitxa ('O' o 'X') al tauler segons el torn de jugador
+
             MOVH R0, BYTEALTO PANTALLA 
-            MOVL R0, BYTEBAJO PANTALLA
+            MOVL R0, BYTEBAJO PANTALLA 
 
-            POP R4
-            POP R2
+            POP R4                     ; Recuperem R4
+            POP R2                     ; Recuperem R2
 
-            XOR R1,R1,R1
-            XOR R3,R3,R3
-            DEC R2
-            DEC R4
-            
-            MOVL R3, 15
-            MUL2:
-                ADD R1,R1,R2
-                DEC R3
-            BRNZ MUL2
+            XOR R1, R1, R1             ; R1 = 0 
+            XOR R3, R3, R3             ; R3 = 0 
+            DEC R2                     ; R2 = fila - 1
+            DEC R4                     ; R4 = columna - 1
 
-            ADD R1, R4, R1
-            MOVL R4, 66
-            ADD R1, R1, R4
+            MOVL R3, 15                ; R3 = 15 (número de repeticions per desplaçament horitzontal)
+        MUL2:  
+            ADD R1, R1, R2             ; R1 += (fila-1)
+            DEC R3                     ; R3 -= 1
+            BRNZ MUL2                  ; Repetir 15 vegades -> R1 = 15*(fila-1)
 
-            ADD R0, R1, R0
-            MOVH R3, 00111100b
+            ADD R1, R4, R1             ; R1 += (columna-1)
+            MOVL R4, 66                ; R4 = 66 (posició inicial taulell)
+            ADD R1, R1, R4             ; R1 = 66 + R1
 
-            POP R1
-            
-            
+            ADD R0, R1, R0             ; R0 = adreça de la casella a pintar
 
+            MOVH R3, 00111100b         
 
-            XOR R4, R4, R4
-            INC R4
-            COMP R4, R1
-            BRZ print_X
-            
-            MOVL R3, 4Fh
-            MOV [R0], R3
-            RET
-            print_X:
-                MOVL R3, 58h
-                MOV [R0], R3
-                RET
+            POP R1                     ; Recuperem R1 
+
+            XOR R4, R4, R4             ; R4 = 0
+            INC R4                     ; R4 = 1 
+
+            COMP R4, R1                ; Compara si és el jugador 1
+            BRZ print_X                
+
+            MOVL R3, 4Fh               ; 'O'
+            MOV [R0], R3               ; Pintem 'O' a la posició R0
+            RET                        
+
+        print_X:
+            MOVL R3, 58h               ; 'X'
+            MOV [R0], R3               ; Pintem 'X' a la posició R0
+            RET                        
+
 
     
-    tres_ratlla:
-        MOVH R3, 00h
+    tres_ratlla:                   ; Comprova si algun jugador ha fet tres en ratlla
+        MOVH R3, 00h               ; R3 ← 07h, servirà com a offset per recórrer vector de combinacions guanyadores
         MOVL R3, 07h
-        MOVH R0, BYTEALTO DIRECCION wins
+
+        MOVH R0, BYTEALTO DIRECCION wins   
         MOVL R0, BYTEBAJO DIRECCION wins
 
-        ADD R0, R3, R0
+        ADD R0, R3, R0             ; R0 <- R0 + 7 -> apuntador a la darrera combinació; començarem des d'aquí
+
         
+        check_win:                ; Comprova si el jugador 1 ha aconseguit una combinació guanyadora
+
+        MOV R2, [R0]              ; R2 <- combinació guanyadora actual 
+        PUSH R1                   ; Guardem R1 
+        AND R1, R5, R2            ; R1 <- bits de jugador 1 en aquesta combinació
+
+        COMP R1, R2               ; Compara si és una jugada guanyadora
+        BRZ win                   ; Si R1 == R2 -> jugador 1 ha guanyat
+
+        POP R1                    ; Recuperem R1
+        DEC R0                    ; Retrocedim al següent patró de victòria anterior
+        DEC R3                    ; Decrementem el comptador de combinacions
+        BRNS check_win               
+
+        ; Si aquí, jugador 1 no ha guanyat -> comprovem el jugador 2
+
+        MOVH R3, 00h              
+        MOVL R3, 07h                 ; R3 ← 07h (màxim combinacions)
+        INC R0                    ; Avancem per reiniciar des de la primera combinació
+        ADD R0, R0, R3            ; R0 = base + 7 -> inici nou bucle
+
+        check_win2:                       ; Comprova si el jugador 2 ha fet una combinació guanyadora
+            MOV R2, [R0]              ; R2 <- combinació actual
+            PUSH R1                   ; Guardem R1
+            AND R1, R6, R2            ; R1 <- bits de jugador 2 en aquesta combinació
+            COMP R1, R2               ; Compara si és una jugada guanyadora
+            BRZ win                   ; Si R1 = R2 -> jugador 2 ha guanyat
+
+            POP R1                    ; Recuperem R1
+            DEC R0                    ; Retrocedim al següent patró de victòria anterior
+            DEC R3                    ; Decrementem comptador
+        BRNS check_win2              
+
+            ; Si cap jugador no ha guanyat, continua 
+
         
+            OR R2, R5, R6              ; R2 <- caselles ocupades per ambdós jugadors
 
-        check_win:
-            MOV R2, [R0]
-            PUSH R1
-            AND R1, R5, R2
+            MOVL R3, 0FFh              ; R3 = 0FFh (mask de totes les 9 caselles: bits 0–8 posats)
+            MOVH R3, 01h
+            COMP R2, R3                ; Compara si totes les caselles estan plenes (empat)
+            BRZ draw                   ; Si R2 = 1FFh -> tauler complet -> salt a draw
 
-            COMP R1,R2
-            BRZ win
-            
-            POP R1
-            DEC R0    
-            DEC R3
-        BRNS check_win
+            MOVH R2, 00h              
+            MOVL R2, 01h               ; R2 = 1 (identificador del jugador 1)
+            COMP R2, R1                ; Compara R1 (jugador que no va guanyar) amb 1
+            BRNZ t_one                 ; Si R1 != 1 -> és torn jugador 2 -> salt a t_one
 
-        MOVH R3, 00h
-        MOVL R3, 07h
-        INC R0
-        ADD R0, R0, R3
+            ; Si R1 == 1 -> torn jugador 2
+            MOVH R3, BYTEALTO DIRECCION torn_jug2
+            MOVL R3, BYTEBAJO DIRECCION torn_jug2
+            CALL R3                    
 
-        check_win2:
-            MOV R2, [R0]
-            PUSH R1
-            AND R1, R6, R2
-            COMP R1,R2
-            BRZ win
-            POP R1
-            DEC R0    
-            DEC R3
-        BRNS check_win2
-
-        OR R2, R5, R6
-        
-        MOVL R3, 0FFh
-        MOVH R3, 01h
-        COMP  R2, R3
-        BRZ draw
-        
-        MOVH R2, 00h
-        MOVL R2, 01h
-        COMP  R2, R1
-        BRNZ t_one
-        MOVH R3, BYTEALTO DIRECCION torn_jug2
-        MOVL R3, BYTEBAJO DIRECCION torn_jug2
-        CALL R3
-
-        t_one:
+        t_one:                         ; Si R1 = 2 -> torn jugador 1 
             MOVH R3, BYTEALTO DIRECCION torn_jug1
             MOVL R3, BYTEBAJO DIRECCION torn_jug1
-            CALL R3
+            CALL R3                    
+        draw:                         ; Empat: acaba el joc
+            MOVH R3, BYTEALTO DIRECCION replay
+            MOVL R3, BYTEBAJO DIRECCION replay
+            CALL R3                    
 
-        draw:
-            MOVH R3, BYTEALTO DIRECCION fi
-            MOVL R3, BYTEBAJO DIRECCION fi
-            CALL R3
-
-        win:
-            POP R1
+        win:                          ; Quan hi ha un guanyador
+            POP R1                    ; Recuperem R1 (jugador que ha guanyat)
 
             MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
             MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
-            CALL R3
+            CALL R3                    
 
             MOVH R3, BYTEALTO PANTALLA
             MOVL R3, BYTEBAJO PANTALLA
 
             MOVH R2, 00h
-            MOVL R2, 1Eh
+            MOVL R2, 1Eh               ; R2 = 1Eh (offset per situar missatge de victoria)
+            ADD R3, R3, R2             ; R3 = posició on escriure el text de victoria
 
-            ADD R3, R3, R2
-
-            MOVH R4, BYTEALTO DIRECCION win_txt
-            MOVL R4, BYTEBAJO DIRECCION win_txt
+            MOVH R4, BYTEALTO DIRECCION campio
+            MOVL R4, BYTEBAJO DIRECCION campio  
 
             MOVH R2, BYTEALTO DIRECCION print_line
             MOVL R2, BYTEBAJO DIRECCION print_line
-            CALL R2
+            CALL R2                    
 
-            DEC R3
+            XOR R2, R2, R2 ; Retrocedeix al lloc de col·locar el nom del jugador
+            MOVL R2, 7h
+
+            SUB R3, R3, R2
+
+            XOR R2,R2,R2
+            inf4:
+                AND R2,R2,R2
+            BRZ inf4 
+
+            MOVL R2, 1
+            COMP R2, R1
+            BRZ win_1
+            MOVL R2, 2
+            COMP R2, R1
+            BRZ win_2
+            COMP R2,R2
+            BRZ skip3
             
-            MOVL R2, 30h
-            ADD R2, R1, R2
-            MOVH R2, 00000011b
+            win_1:
+                MOVH R4, BYTEALTO DIRECCION name1
+                MOVL R4, BYTEBAJO DIRECCION name1
+                COMP R2,R2
+                BRZ skip3
 
-            MOV [R3], R2
+            win_2:
+                MOVH R4, BYTEALTO DIRECCION name2
+                MOVL R4, BYTEBAJO DIRECCION name2
+                
+            skip3:
+                MOVH R2, BYTEALTO DIRECCION print_name
+                MOVL R2, BYTEBAJO DIRECCION print_name
+                CALL R2 
+        
+            MOVH R2, 0
+            MOVL R2, 01Fh         
+            delay:
+                DEC R2
+            BRNZ delay
+
+            MOVH R3, BYTEALTO DIRECCION replay
+            MOVL R3, BYTEBAJO DIRECCION replay
+            CALL R3 
     RET
 
-    replay:
+    replay:                        ; Pregunta al jugador si vol tornar a jugar ('s' per sí, 'n' per no) i actua en conseqüència
+
+        ; Neteja la pantalla i prepara la primera línia de preguntes
         MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
         MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
-        CALL R3
+        CALL R3                    
 
-        MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
+        MOVH R0, BYTEALTO PANTALLA
+        MOVL R0, BYTEBAJO PANTALLA 
 
         MOVH R2, 00h
-        MOVL R2, 1Eh
-
+        MOVL R2, 1Eh              ; R2 = 1Eh -> offset per situar el text de replay
         XOR R3, R3, R3
-        ADD R3, R0, R2
+        ADD R3, R0, R2            ; R3 = R0 + offset -> línia on escriurem
 
+        ; Escriu el text de pregunta "Vols rejugar? "
         MOVH R4, BYTEALTO DIRECCION rply_txt
         MOVL R4, BYTEBAJO DIRECCION rply_txt
 
         MOVH R2, BYTEALTO DIRECCION print_line
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
+        CALL R2                    
 
+        ; Escriu l'opció "s/n" a continuació de la pregunta
         MOVH R2, 00h
-        MOVL R2, 2Dh
+        MOVL R2, 2Dh              ; 2Dh 
+        ADD R3, R0, R2            ; R3 = R0 + 2Dh -> posició per escriure "s/n"
 
-        ADD R3, R0, R2
-        
         MOVH R4, BYTEALTO DIRECCION s_o_n
         MOVL R4, BYTEBAJO DIRECCION s_o_n
 
-        
-
         MOVH R2, BYTEALTO DIRECCION print_line
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
+        CALL R2                    
 
-        ask_replay:
+        ask_replay:                     ; Bucle que espera fins que l'usuari premi 's' o 'n'
             MOVH R3, BYTEALTO DIRECCION clean_teclat
             MOVL R3, BYTEBAJO DIRECCION clean_teclat
-            CALL R3
-            
-            MOVL R0, BYTEBAJO TECLAT        
-            MOVH R0, BYTEALTO TECLAT
-            INC R0
-            
-            MOVH R2,00000001b 			
-            MOVL R2,00000000b
+            CALL R3                    
 
-            no_tecla3:
+            MOVL R0, BYTEBAJO TECLAT
+            MOVH R0, BYTEALTO TECLAT
+            INC R0                     ; R0 apunta al registre de dades del teclat
+
+            MOVH R2, 00000001b
+            MOVL R2, 00000000b         ; R2 = 0 -> detecció de tecleig
+
+            no_tecla3:                     ; Espera activa fins que hi hagi una tecla
                 MOV R4, [R0]
                 MOVL R4, 00h
-                COMP R4,R2; comprovem el bit 8 per veure si s'ha pitjat una tecla
-            BRNZ no_tecla3
+                COMP R4, R2
+                BRNZ no_tecla3             ; Si no hi ha tecla, segueix esperant
 
-            DEC R0
-            MOV R3,[R0]	
-            MOVH R3, 00h
-            MOVH R4, 00h
-            MOVL R4, 73h
-            COMP R3,R4
-            BRZ s_pressed
-            MOVL R4, 6Eh
-            COMP R3,R4
-            BRZ n_pressed
-            XOR R4,R4,R4
-        BRZ ask_replay
+                DEC R0                     ; Retrocedeix al byte baix 
+                MOV R3, [R0]               ; R3 = codi ASCII de la tecla
+                MOVH R3, 00h               ; Neteja part alta
+                MOVH R4, 00h               ; Neteja part alta de R4
 
-        s_pressed:
-            MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
-            MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
-            CALL R3
+                MOVL R4, 73h               ; 's'
+                COMP R3, R4
+                BRZ s_pressed              ; Si és 's', salt a s_pressed
 
-            MOVH R3, BYTEALTO DIRECCION Pintar_tauler
-            MOVL R3, BYTEBAJO DIRECCION Pintar_tauler
-            CALL R3
-            
-            MOVH R3, BYTEALTO DIRECCION torn_jug1
-            MOVL R3, BYTEBAJO DIRECCION torn_jug1
-            CALL R3
-        n_pressed:
-            MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
-            MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
-            CALL R3
+                MOVL R4, 6Eh               ; 'n'
+                COMP R3, R4
+                BRZ n_pressed              ; Si és 'n', salt a n_pressed
 
-            MOVH R0, BYTEALTO PANTALLA 
-            MOVL R0, BYTEBAJO PANTALLA
+                XOR R4, R4, R4
+                BRZ ask_replay             ; Si cap, repeteix la pregunta
 
-            MOVH R2, 00h
-            MOVL R2, 1Eh
+            s_pressed:                      ; L'usuari ha triat 's' -> reinicia el joc
+                MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+                MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+                CALL R3                    
 
-            ADD R3, R0, R2
-        
-            MOVH R4, BYTEALTO DIRECCION merci
-            MOVL R4, BYTEBAJO DIRECCION merci
+                MOVH R3, BYTEALTO DIRECCION Pintar_tauler
+                MOVL R3, BYTEBAJO DIRECCION Pintar_tauler
+                CALL R3                    
 
-            
+                MOVH R3, BYTEALTO DIRECCION torn_jug1
+                MOVL R3, BYTEBAJO DIRECCION torn_jug1
+                CALL R3                    
 
-            MOVH R2, BYTEALTO DIRECCION print_line
-            MOVL R2, BYTEBAJO DIRECCION print_line
-            CALL R2
+            n_pressed:                      ; L'usuari ha triat 'n' -> mostra missatge d'agraïment i acaba
+                MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+                MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+                CALL R3                    
 
-            MOVH R3, BYTEALTO DIRECCION fi
-            MOVL R3, BYTEBAJO DIRECCION fi
-            CALL R3
-        
-    RET
-FIN
+                MOVH R0, BYTEALTO PANTALLA
+                MOVL R0, BYTEBAJO PANTALLA
+
+                MOVH R2, 00h
+                MOVL R2, 1Eh
+                ADD R3, R0, R2            ; R3 = posició per "merci"
+
+                MOVH R4, BYTEALTO DIRECCION merci
+                MOVL R4, BYTEBAJO DIRECCION merci
+
+                MOVH R2, BYTEALTO DIRECCION print_line
+                MOVL R2, BYTEBAJO DIRECCION print_line
+                CALL R2                    
+
+                MOVH R3, BYTEALTO DIRECCION fi
+                MOVL R3, BYTEBAJO DIRECCION fi
+                CALL R3                    
+
+    RET                            
+FIN                               
     
 
 
