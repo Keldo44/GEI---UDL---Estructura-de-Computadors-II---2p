@@ -16,6 +16,7 @@ win_txt VALOR       "CAMPIO JUGADOR "
 rply_txt VALOR      "TORNAR A JUGAR?"
 s_o_n VALOR         "      s/n      "
 merci VALOR         "MERCI PER JUGAR"
+void VALOR          "               "
 fila4 VALOR 0,0,0
 fila5 VALOR 0,0,0
 fila6 VALOR 0,0,0
@@ -29,7 +30,7 @@ ini:
     MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
 	MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
     CALL R3
-	
+
     MOVH R3, BYTEALTO DIRECCION NOM_1
 	MOVL R3, BYTEBAJO DIRECCION NOM_1
     CALL R3
@@ -778,6 +779,34 @@ ini:
             COMP R3, R2                ; Compara si és un '3'
             BRZ fil_is_three           
 
+            MOVH R3, BYTEALTO PANTALLA
+            MOVL R3, BYTEBAJO PANTALLA
+
+            MOVH R2, 00h
+            MOVL R2, 1Eh               ; R2 = 1Eh (offset per situar missatge de ERROR)
+            ADD R3, R3, R2             
+
+            MOVH R4, BYTEALTO DIRECCION miss2
+            MOVL R4, BYTEBAJO DIRECCION miss2  
+
+            MOVH R2, BYTEALTO DIRECCION print_line
+            MOVL R2, BYTEBAJO DIRECCION print_line
+            CALL R2
+
+            MOVH R3, BYTEALTO PANTALLA
+            MOVL R3, BYTEBAJO PANTALLA
+
+            MOVH R2, 00h
+            MOVL R2, 1Eh               
+            ADD R3, R3, R2 
+
+            MOVH R4, BYTEALTO DIRECCION void
+            MOVL R4, BYTEBAJO DIRECCION void  
+
+            MOVH R2, BYTEALTO DIRECCION print_line
+            MOVL R2, BYTEBAJO DIRECCION print_line
+            CALL R2
+
             COMP R3, R2                ; Compara R3 amb R2 
             BRNZ wait_tecla            ; Si no és cap de l'anterior, esperem una altra tecla
 
@@ -837,6 +866,34 @@ ini:
             MOVL R4, 33h               ; R4 <- '3'
             COMP R3, R4
             BRZ col_is_three           ; Si és '3', retornarem 3
+
+            MOVH R3, BYTEALTO PANTALLA
+            MOVL R3, BYTEBAJO PANTALLA
+
+            MOVH R2, 00h
+            MOVL R2, 1Eh               ; R2 = 1Eh (offset per situar missatge de ERROR)
+            ADD R3, R3, R2             
+
+            MOVH R4, BYTEALTO DIRECCION miss2
+            MOVL R4, BYTEBAJO DIRECCION miss2  
+
+            MOVH R2, BYTEALTO DIRECCION print_line
+            MOVL R2, BYTEBAJO DIRECCION print_line
+            CALL R2
+
+            MOVH R3, BYTEALTO PANTALLA
+            MOVL R3, BYTEBAJO PANTALLA
+
+            MOVH R2, 00h
+            MOVL R2, 1Eh               
+            ADD R3, R3, R2 
+
+            MOVH R4, BYTEALTO DIRECCION void
+            MOVL R4, BYTEBAJO DIRECCION void  
+
+            MOVH R2, BYTEALTO DIRECCION print_line
+            MOVL R2, BYTEBAJO DIRECCION print_line
+            CALL R2
 
             COMP R3, R4                ; Comprovació final
             BRNZ wait_tecla2           ; Si no és cap tecla vàlida, tornem a esperar
@@ -905,6 +962,34 @@ ini:
             ;Si està ocupada, demana novament fila i columna
             POP R1                   ; Recuperem R1 
             PUSH R1                  ; Guardem R1
+
+            MOVH R3, BYTEALTO PANTALLA
+            MOVL R3, BYTEBAJO PANTALLA
+
+            MOVH R2, 00h
+            MOVL R2, 1Eh               ; R2 = 1Eh (offset per situar missatge de ERROR)
+            ADD R3, R3, R2             
+
+            MOVH R4, BYTEALTO DIRECCION miss1
+            MOVL R4, BYTEBAJO DIRECCION miss1  
+
+            MOVH R2, BYTEALTO DIRECCION print_line
+            MOVL R2, BYTEBAJO DIRECCION print_line
+            CALL R2
+
+            MOVH R3, BYTEALTO PANTALLA
+            MOVL R3, BYTEBAJO PANTALLA
+
+            MOVH R2, 00h
+            MOVL R2, 1Eh               
+            ADD R3, R3, R2 
+
+            MOVH R4, BYTEALTO DIRECCION void
+            MOVL R4, BYTEBAJO DIRECCION void  
+
+            MOVH R2, BYTEALTO DIRECCION print_line
+            MOVL R2, BYTEBAJO DIRECCION print_line
+            CALL R2
 
             MOVH R3, BYTEALTO DIRECCION print_FIL
             MOVL R3, BYTEBAJO DIRECCION print_FIL
@@ -1067,9 +1152,13 @@ ini:
             MOVL R3, BYTEBAJO DIRECCION torn_jug1
             CALL R3                    
         draw:                         ; Empat: acaba el joc
+            MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+            MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+            CALL R3
+            
             MOVH R3, BYTEALTO DIRECCION replay
             MOVL R3, BYTEBAJO DIRECCION replay
-            CALL R3                    
+            CALL R3                   
 
         win:                          ; Quan hi ha un guanyador
             POP R1                    ; Recuperem R1 (jugador que ha guanyat)
@@ -1097,10 +1186,7 @@ ini:
 
             SUB R3, R3, R2
 
-            XOR R2,R2,R2
-            inf4:
-                AND R2,R2,R2
-            BRZ inf4 
+            
 
             MOVL R2, 1
             COMP R2, R1
@@ -1132,9 +1218,13 @@ ini:
                 DEC R2
             BRNZ delay
 
+            MOVH R3, BYTEALTO DIRECCION Clean_teclat_pantalla
+            MOVL R3, BYTEBAJO DIRECCION Clean_teclat_pantalla
+            CALL R3
+            
             MOVH R3, BYTEALTO DIRECCION replay
             MOVL R3, BYTEBAJO DIRECCION replay
-            CALL R3 
+            CALL R3
     RET
 
     replay:                        ; Pregunta al jugador si vol tornar a jugar ('s' per sí, 'n' per no) i actua en conseqüència
