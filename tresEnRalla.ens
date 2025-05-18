@@ -1,3 +1,8 @@
+; ---------------------------------------------------------------
+; Nom alumne 1: Ivan Ortiga Aguilar
+; Nom alumne 2: Kilian Pintor Garrido
+; Grup Pràctiques: GPraLab3
+; ---------------------------------------------------------------
 TECLAT EQU 0B000h
 PANTALLA EQU 0A000h
 ORIGEN 100h
@@ -109,269 +114,280 @@ ini:
         POP R0
     RET
 
-    NOM_1:
-        MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
-        MOV R3, R0
-        XOR R4, R4, R4
-        MOVL R4, 97
+    NOM_1:                          ; Mostra el text per introduir el nom del jugador 1 i prepara registres per llegir-lo
 
-        ADD R3, R3, R4
-        MOVH R4, 00000111b
-        MOVL R4, 39h
-        MOV [R3], R4
-        MOV R3, R0
+        MOVH R0, BYTEALTO PANTALLA 
+        MOVL R0, BYTEBAJO PANTALLA 
+
+        MOV R3, R0                  ; R3 ← adreça de pantalla (cursor de text)
+
         XOR R4, R4, R4
+        MOVL R4, 97                 ; R4 ← offset 97 -> posició on es mostrarà el número de temps
+
+        ADD R3, R3, R4              ; R3 ← posició R0 + 97 → ubicació on es mostrarà el número de temps
+
+        MOVH R4, 00000111b          
+        MOVL R4, 39h                ; '9' temps
+        MOV [R3], R4                ; Escriu el caràcter a pantalla
+
+        MOV R3, R0                  ; R3 ← reinicia el cursor de pantalla
+        XOR R4, R4, R4              ; Neteja R4
 
         MOVH R4, BYTEALTO DIRECCION nom
-        MOVL R4, BYTEBAJO DIRECCION nom
+        MOVL R4, BYTEBAJO DIRECCION nom 
 
         MOVH R2, BYTEALTO DIRECCION print_line
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
-
-        XOR R2,R2,R2
+        CALL R2                     
+        
+        XOR R2, R2, R2
         MOVL R2, 02h
-        SUB R3, R3, R2
+        SUB R3, R3, R2              ; R3 <- cursor pantalla - 2 -> mou enrere per posar el número
+
         MOVH R2, 03h
-        MOVL R2, 31h
-        MOV [R3], R2
+        MOVL R2, 31h                ; '1'
+        MOV [R3], R2                ; Escriu '1' (jugador 1)
 
         MOVH R1, BYTEALTO TECLAT
-        MOVL R1, BYTEBAJO TECLAT
+        MOVL R1, BYTEBAJO TECLAT   
 
         MOVH R2, 00h
-        MOVL R2, 50h
+        MOVL R2, 50h                ; R2 <- límit temps
 
         MOVH R3, BYTEALTO DIRECCION name1
-        MOVL R3, BYTEBAJO DIRECCION name1
+        MOVL R3, BYTEBAJO DIRECCION name1 ; 
 
         MOVH R4, 00h
-        MOVL R4, 06h
+        MOVL R4, 06h                ; R4 ← longitud màxima del nom (6 caràcters)
 
-        XOR R5, R5, R5
-        inf1:
-            
-            wait_char1:
-                PUSH R3
-                PUSH R4
+        XOR R5, R5, R5              ; R5 <- 0 
 
-                INC R1
-                
-                MOVH R3,00000001b 			
-                MOVL R3,00000000b
+        inf1:                     ; Llegeix caràcters del nom del jugador 1 fins que acabi el temps o màxim longitud
 
-                INC R5
-                XOR R6,R6,R6
-                MOVL R6, 10
-                COMP R6,R5
-                BRNZ skip2
-                MOVL R5, 97
-                ADD R0, R5, R0
-                
-                MOV R6, [R0]
-                DEC R6
-                MOV [R0], R6
+    wait_char1:
+        PUSH R3                   ; Guardem R3 
+        PUSH R4                   ; Guardem R4 
 
-                SUB R0, R0, R5
-                XOR R5,R5,R5
-                
-                skip2:
-                    AND R5,R5,R5
-                
-                DEC R2
-                BRZ acabado
+        INC R1                    ; R1 apunta al següent caràcter de la cadena name1
 
+        MOVH R3, 00000001b        
+        MOVL R3, 00000000b
 
-                MOV R4, [R1]
-                MOVL R4, 00h
-                SUB R6,R4,R3
-                POP R4
-                POP R3
-                DEC R1
-                AND R6,R6,R6
-            BRNZ wait_char1
-            MOV R6, [R1]
-            MOV [R3], R6
-            INC R3
-            
-            MOVH R6, 11b 			
-            PUSH R2
-            PUSH R4
-            XOR R2, R2, R2
-            MOVL R2, 30
-            
-            MOVH R4, BYTEALTO DIRECCION name1
-            MOVL R4, BYTEBAJO DIRECCION name1
+        INC R5                    ; R5 comptador per saber quan decrementar el temps
+        XOR R6, R6, R6
+        MOVL R6, 10               ; 10 
+        COMP R6, R5               ; Compara si R5 és 10 
+        BRNZ skip2                
 
-            SUB R4, R3, R4
-            ADD R2, R2, R4
+        ; Si s’ha arribat a 10 decrementem 1 al temps
+        MOVL R5, 97               ; R5 = ASCII 'a' (codi d’exemple de backspace)
+        ADD R0, R5, R0            ; R0 apuntaria aquí a la tecla
+        MOV R6, [R0]  
+        DEC R6                    ; Decrementa per posar el nou temps
+        MOV [R0], R6              ; Escriu el nou valor 
+        SUB R0, R0, R5
+        XOR R5, R5, R5            ; R5 = 0 (reinici comptador)
+    skip2:
+        AND R5, R5, R5            ; Netegem R5 si cal
 
-            MOVH R0, BYTEALTO PANTALLA 
-            MOVL R0, BYTEBAJO PANTALLA
+        DEC R2                    ; R2 compta el temps
+        BRZ acabado               ; Si R2 = 0, hem acabat
 
-            ADD R0, R2, R0
-            
-            MOV [R0], R6
-            SUB R0, R0, R2
-            
-            POP R4
-            POP R2			
+        MOV R4, [R1]              ; R4 = caràcter llegit de name1
+        MOVL R4, 00h              ; Netegem part alta
+        SUB R6, R4, R3            ; R6 = R4 - R3
+        POP R4
+        POP R3
+        DEC R1                    ; Retrocedim punter R1 per reescriure si cal
+        AND R6, R6, R6
+        BRNZ wait_char1           
 
-            
-            PUSH R3
-            DEC R4
-            PUSH R4
-            INC R4
-            DEC R4
-            BRZ acabado
-            POP R4
-            POP R3
-            DEC R2
+        ; Si és caràcter vàlid, escrivim-lo a pantalla
+        MOV R6, [R1]              ; R6 = caràcter actual
+        MOV [R3], R6              ; Escriu a pantalla a la posició R3
+        INC R3                    ; Avança punter de pantalla
 
-            
-        BRNZ inf1
+        MOVH R6, 11b              
+        PUSH R2                   ; Guardem R2
+        PUSH R4                   ; Guardem R4 
+        XOR R2, R2, R2
+        MOVL R2, 30               ; '0'
 
-        acabado:
-            POP R4
-            POP R3            
-            XOR R6,R6,R6
-            MOV R5,R6
+        MOVH R4, BYTEALTO DIRECCION name1 
+        MOVL R4, BYTEBAJO DIRECCION name1
+
+        SUB R4, R3, R4            ; R4 = posició escrita - base -> índex caràcter
+        ADD R2, R2, R4            ; R2 = '0' + índex -> mostra índex a pantalla
+
+        MOVH R0, BYTEALTO PANTALLA
+        MOVL R0, BYTEBAJO PANTALLA 
+
+        ADD R0, R2, R0            ; R0 = posició on escriure índex
+        MOV [R0], R6              ; Escriu el caràcter llegit
+        SUB R0, R0, R2            ; R0 restaura si cal
+
+        POP R4                    ; Recuperem R4
+        POP R2                    ; Recuperem R2 
+
+        ; Tornem a provar de llegir si encara queda espai
+        PUSH R3
+        DEC R4
+        PUSH R4
+        INC R4
+        DEC R4
+        BRZ acabado               ; Si R4 = 0, acabem
+        POP R4
+        POP R3
+        DEC R2
+    BRNZ inf1                 
+
+acabado:
+    POP R4
+    POP R3
+    XOR R6, R6, R6
+    MOV R5, R6               
+RET                          
+
         
-    RET
-        
-    NOM_2:
+    NOM_2:                          ; Mostra el missatge per introduir el nom del jugador 2 i prepara registres per llegir-lo
+
         MOVH R0, BYTEALTO PANTALLA 
-        MOVL R0, BYTEBAJO PANTALLA
-        MOV R3, R0
-        XOR R4, R4, R4
-        MOVL R4, 97
+        MOVL R0, BYTEBAJO PANTALLA 
 
-        ADD R3, R3, R4
-        MOVH R4, 00000111b
-        MOVL R4, 39h
-        MOV [R3], R4
-        MOV R3, R0
+        MOV R3, R0                  ; R3 ← cursor de pantalla
+
         XOR R4, R4, R4
+        MOVL R4, 97                 ; R4 ← offset 97 -> posició on es mostrarà el número de temps
+
+        ADD R3, R3, R4              ; R3 ← R0 + 97 → ubicació on es mostrarà el temps
+
+        MOVH R4, 00000111b          
+        MOVL R4, 39h                ; '9' 
+        MOV [R3], R4                ; Escriu el temps a pantalla
+
+        MOV R3, R0                  ; R3 ← reinicia cursor de pantalla
+        XOR R4, R4, R4              ; R4 = 0
 
         MOVH R4, BYTEALTO DIRECCION nom
-        MOVL R4, BYTEBAJO DIRECCION nom
+        MOVL R4, BYTEBAJO DIRECCION nom 
 
         MOVH R2, BYTEALTO DIRECCION print_line
         MOVL R2, BYTEBAJO DIRECCION print_line
-        CALL R2
+        CALL R2                     
 
-        XOR R2,R2,R2
+        XOR R2, R2, R2
         MOVL R2, 02h
-        SUB R3, R3, R2
+        SUB R3, R3, R2              ; R3 ← cursor - 2 per col·locar el número
+
         MOVH R2, 03h
-        MOVL R2, 32h
-        MOV [R3], R2
+        MOVL R2, 32h                ;'2'
+        MOV [R3], R2                ; Escriu '2' per jugador 2
 
         MOVH R1, BYTEALTO TECLAT
-        MOVL R1, BYTEBAJO TECLAT
+        MOVL R1, BYTEBAJO TECLAT    
 
         MOVH R2, 00h
-        MOVL R2, 50h
+        MOVL R2, 50h                ; R2 <- límit de temps
 
         MOVH R3, BYTEALTO DIRECCION name2
-        MOVL R3, BYTEBAJO DIRECCION name2
+        MOVL R3, BYTEBAJO DIRECCION name2 
 
         MOVH R4, 00h
-        MOVL R4, 06h
+        MOVL R4, 06h                ; R4 <- longitud màxima del nom (6)
 
-        XOR R5, R5, R5
-        inf2:
+        XOR R5, R5, R5              ; R5 <- 0 
+
+    inf2:                          ; Bucle per decrementar el temps
+
+        wait_char2:
+            PUSH R3                ; Guardem R3 
+            PUSH R4                ; Guardem R4 
+
+            INC R1                 ; Avança punter de teclat
+
+            MOVH R3, 00000001b     
+            MOVL R3, 00000000b
+
+            INC R5                 ; R5 comptador per saber quan decrementar el temps
+            XOR R6, R6, R6
+            MOVL R6, 10            ; R6 = 10 (per saber quan decrementar el temps)
             
-            wait_char2:
-                PUSH R3
-                PUSH R4
+            
+            COMP R6, R5            ; Compara si R5 és 10
+            BRNZ skip22            
 
-                INC R1
-                
-                MOVH R3,00000001b 			
-                MOVL R3,00000000b
+            ; En la posició on es veura el temps
+            MOVL R5, 97            
+            ADD R0, R5, R0
+            MOV R6, [R0]
+            DEC R6
+            MOV [R0], R6
+            SUB R0, R0, R5
+            XOR R5, R5, R5
 
-                INC R5
-                XOR R6,R6,R6
-                MOVL R6, 10
-                COMP R6,R5
-                BRNZ skip22
-                MOVL R5, 97
-                ADD R0, R5, R0
-                
-                MOV R6, [R0]
-                DEC R6
-                MOV [R0], R6
+        skip22:
+            AND R5, R5, R5         
 
-                SUB R0, R0, R5
-                XOR R5,R5,R5
-                
-                skip22:
-                    AND R5,R5,R5
-                
-                DEC R2
-                BRZ acabado2
+            DEC R2                 
+            BRZ acabado2           
 
+            MOV R4, [R1]           ; R4 <- caràcter llegit
+            MOVL R4, 00h           ; Neteja part alta
+            SUB R6, R4, R3         
+            POP R4
+            POP R3
+            DEC R1                 ; Retrocedeix punter de teclat 
+            AND R6, R6, R6
+            BRNZ wait_char2        
 
-                MOV R4, [R1]
-                MOVL R4, 00h
-                SUB R6,R4,R3
-                POP R4
-                POP R3
-                DEC R1
-                AND R6,R6,R6
-            BRNZ wait_char2
+            ; Escriu el caràcter llegit a pantalla
             MOV R6, [R1]
             MOV [R3], R6
-            INC R3
-            
-            MOVH R6, 11b 			
-            PUSH R2
-            PUSH R4
+            INC R3                 ; Avança cursor de pantalla
+
+            MOVH R6, 11b           
+            PUSH R2                ; Guardem R2
+            PUSH R4                ; Guardem R4 
             XOR R2, R2, R2
-            MOVL R2, 30
-            
+            MOVL R2, 30            ; '0'
+
             MOVH R4, BYTEALTO DIRECCION name2
             MOVL R4, BYTEBAJO DIRECCION name2
 
-            SUB R4, R3, R4
-            ADD R2, R2, R4
+            SUB R4, R3, R4         ; R4 = posició - base -> índex
+            ADD R2, R2, R4         ; R2 = '0'+índex
 
-            MOVH R0, BYTEALTO PANTALLA 
+            MOVH R0, BYTEALTO PANTALLA
             MOVL R0, BYTEBAJO PANTALLA
 
-            ADD R0, R2, R0
-            
-            MOV [R0], R6
+            ADD R0, R2, R0         ; R0 = posició de pantalla per índex
+            MOV [R0], R6           ; Escriu índex per visualitzar longitud
             SUB R0, R0, R2
-            
-            POP R4
-            POP R2			
 
-            
+            POP R4                 ; Recuperem R4
+            POP R2                 ; Recuperem R2
+
+            ; Prepara següent caràcter
             PUSH R3
             DEC R4
             PUSH R4
             INC R4
             DEC R4
-            BRZ acabado2
+            BRZ acabado2          ; Si R4 = 0, acabem
             POP R4
             POP R3
-            DEC R2
-
-            
+            DEC R2                 
         BRNZ inf2
 
-        acabado2:
-            POP R4
-            POP R3            
-            XOR R6,R6,R6
-            MOV R5,R6
-        
-    RET
+    acabado2:                        
+        POP R4
+        POP R3
+        XOR R6, R6, R6
+        MOV R5, R6               
+    RET                             
+
     
-    Pintar_tauler:                   ; Dibuixa la capçalera del tauler i les etiquetes de fila i columna a la pantalla
+    Pintar_tauler:              ; Dibuixa la capçalera del tauler i les etiquetes de fila i columna a la pantalla
 
         PUSH R0                 ; Guardem R0 
         PUSH R2                 ; Guardem R2
@@ -807,8 +823,8 @@ ini:
             MOVL R2, BYTEBAJO DIRECCION print_line
             CALL R2
 
-            COMP R3, R2                ; Compara R3 amb R2 
-            BRNZ wait_tecla            ; Si no és cap de l'anterior, esperem una altra tecla
+            COMP R3, R3                ; Compara R3 amb R3
+            BRZ wait_tecla            ; Si no és cap de l'anterior, esperem una altra tecla
 
         fil_is_one:
             XOR R2, R2, R2             ; R2 <- 0
@@ -867,6 +883,8 @@ ini:
             COMP R3, R4
             BRZ col_is_three           ; Si és '3', retornarem 3
 
+            PUSH R2
+
             MOVH R3, BYTEALTO PANTALLA
             MOVL R3, BYTEBAJO PANTALLA
 
@@ -895,8 +913,10 @@ ini:
             MOVL R2, BYTEBAJO DIRECCION print_line
             CALL R2
 
-            COMP R3, R4                ; Comprovació final
-            BRNZ wait_tecla2           ; Si no és cap tecla vàlida, tornem a esperar
+            POP R2
+
+            COMP R3, R3               ; Compara R3 amb R3
+            BRZ wait_tecla2           ; Si no és cap tecla vàlida, tornem a esperar
 
         ; Retorns per cada cas correcte
         col_is_one:
